@@ -1,0 +1,45 @@
+include $(TOP)/Makefile.func
+
+SOURCES ?= 
+ASM_SOURCES ?= $(filter %.s,$(SOURCES))
+C_SOURCES ?= $(filter %.c,$(SOURCES))
+CPP_SOURCES ?= $(filter %.cpp,$(SOURCES))
+
+vpath
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
+OBJ_DIR := obj
+OBJECT_FILE = $(notdir $(C_SOURCES:.c=.o)) $(notdir $(ASM_SOURCES:.s=.o)) $(notdir $(CPP_SOURCES:.cpp=.o))
+OBJECT_FILE := $(addprefix $(OBJ_DIR)/,$(OBJECT_FILE))
+
+LIBS_PATH = lib
+
+.PHONY: all clean 
+all: $(OBJECT_FILE) Makefile | $(OBJ_DIR)
+	@$(MAKE) $(LIBS_PATH)/$(TARGET).a
+
+clean:
+	@$(RM) -rf $(OBJ_DIR)
+	@$(RM) -rf $(LIBS_PATH)
+
+$(OBJ_DIR) $(LIBS_PATH):
+	@$(MKDIR) -p $@
+
+$(OBJ_DIR)/%.o: %.cpp Makefile | $(OBJ_DIR)
+	@$(call PRINT_COMPILE_CPP,"$<")
+	@$(CXX) -c $(CXXFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.cpp=.lst)) $< -o $@
+
+$(OBJ_DIR)/%.o: %.c Makefile | $(OBJ_DIR)
+	@$(call PRINT_COMPILE_C,"$<")
+	@$(CC) -c $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+
+$(OBJ_DIR)/%.o: %.s Makefile | $(OBJ_DIR)
+	@$(call PRINT_COMPILE_ASM,"$<")
+	@$(AS) -c $(ASFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.s=.lst)) $< -o $@
+
+$(LIBS_PATH)/$(TARGET).a: $(OBJECT_FILE) | $(LIBS_PATH) 
+	@$(call PRINT_COMPILE_STATIC_LIB,"$@")
+	@$(AR) -cr -o $@ $^
+
