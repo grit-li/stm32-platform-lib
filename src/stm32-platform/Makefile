@@ -6,6 +6,8 @@ SOURCES += hw/stm32_assert.c
 SOURCES += hw/cortex_m.c
 SOURCES += hw/hw_rcc.c
 SOURCES += hw/hw_nvic.c
+SOURCES += hw/hw_scb.c
+SOURCES += hw/hw_scs.c
 
 CFLAGS += -I$(TOP)/include -I$(TOP)/micro-libc/include
 
