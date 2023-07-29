@@ -33,4 +33,6 @@
 
 #define __stm32_platform_bitwise__              __stm32_platform_set_attribute__((bitwise))
 
+#define __stm32_platform_naked__              __stm32_platform_set_attribute__((naked))
+
 #endif
