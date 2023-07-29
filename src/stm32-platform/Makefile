@@ -9,6 +9,7 @@ SOURCES += hw/hw_nvic.c
 SOURCES += hw/hw_scb.c
 SOURCES += hw/hw_scs.c
 SOURCES += hw/hw_flash.c
+SOURCES += hw/hw_gpio.c
 
 CFLAGS += -I$(TOP)/include -I$(TOP)/micro-libc/include
 
