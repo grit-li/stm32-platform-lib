@@ -11,12 +11,12 @@ uint32_t hw_gpio_get_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask)
     return (__GET_GPIO_MODER__(GPIOx) & mask);
 }
 
-void hw_gpio_set_output_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t type)
+void hw_gpio_set_output_type(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t type)
 {
     __BIT_COVER_SET__(__GET_GPIO_OTYPER__(GPIOx), mask, type);
 }
 
-uint32_t hw_gpio_get_output_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask)
+uint32_t hw_gpio_get_output_type(struct GPIO_TypeDef* GPIOx, uint32_t mask)
 {
     return (__GET_GPIO_OTYPER__(GPIOx) & mask);
 }
@@ -31,12 +31,12 @@ uint32_t hw_gpio_get_output_speed(struct GPIO_TypeDef* GPIOx, uint32_t mask)
     return (__GET_GPIO_OSPEEDR__(GPIOx) & mask);
 }
 
-void hw_gpio_set_pull_up_down(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t pull)
+void hw_gpio_set_pull_up_pull_down(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t pull)
 {
     __BIT_COVER_SET__(__GET_GPIO_PUPDR__(GPIOx), mask, pull);
 }
 
-uint32_t hw_gpio_get_pull_up_down(struct GPIO_TypeDef* GPIOx, uint32_t mask)
+uint32_t hw_gpio_get_pull_up_pull_down(struct GPIO_TypeDef* GPIOx, uint32_t mask)
 {
     return (__GET_GPIO_PUPDR__(GPIOx) & mask);
 }

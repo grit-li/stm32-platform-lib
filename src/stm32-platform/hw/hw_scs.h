@@ -2,7 +2,6 @@
 #define __SETM32_PLATFORM_HW_SCS_H__
 
 #include <stdint.h>
-#include <stdbool.h>
 #include "cortex_m.h"
 #include "stm32_hw_reg_map.h"
 #include "stm32_bitops.h"

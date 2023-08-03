@@ -2,7 +2,6 @@
 #define __SETM32_PLATFORM_HW_RCC_H__
 
 #include <stdint.h>
-#include <stdbool.h>
 #include "cortex_m.h"
 #include "stm32_hw_reg_map.h"
 #include "stm32_bitops.h"
@@ -351,9 +350,14 @@ static inline struct RCC_TypeDef* __GET_RCC_REGISTER__(void)
 #define RCC_PLLCFGR_PLLM_Pos                 (4U)
 #define RCC_PLLCFGR_PLLM_Msk                 (0x7UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000070 */
 #define RCC_PLLCFGR_PLLM                     RCC_PLLCFGR_PLLM_Msk
-#define RCC_PLLCFGR_PLLM_0                   (0x1UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000010 */
-#define RCC_PLLCFGR_PLLM_1                   (0x2UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000020 */
-#define RCC_PLLCFGR_PLLM_2                   (0x4UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000040 */
+#define RCC_PLLCFGR_PLLM_0                   (0x0UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000000 */
+#define RCC_PLLCFGR_PLLM_1                   (0x1UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000010 */
+#define RCC_PLLCFGR_PLLM_2                   (0x2UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000020 */
+#define RCC_PLLCFGR_PLLM_3                   (0x3UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000030 */
+#define RCC_PLLCFGR_PLLM_4                   (0x4UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000040 */
+#define RCC_PLLCFGR_PLLM_5                   (0x5UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000050 */
+#define RCC_PLLCFGR_PLLM_6                   (0x6UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000060 */
+#define RCC_PLLCFGR_PLLM_7                   (0x7UL << RCC_PLLCFGR_PLLM_Pos)   /*!< 0x00000070 */
 
 #define RCC_PLLCFGR_PLLN_Pos                 (8U)
 #define RCC_PLLCFGR_PLLN_Msk                 (0x7FUL << RCC_PLLCFGR_PLLN_Pos)  /*!< 0x00007F00 */
@@ -388,8 +392,10 @@ static inline struct RCC_TypeDef* __GET_RCC_REGISTER__(void)
 #define RCC_PLLCFGR_PLLR_Pos                 (25U)
 #define RCC_PLLCFGR_PLLR_Msk                 (0x3UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x06000000 */
 #define RCC_PLLCFGR_PLLR                     RCC_PLLCFGR_PLLR_Msk
-#define RCC_PLLCFGR_PLLR_0                   (0x1UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x02000000 */
-#define RCC_PLLCFGR_PLLR_1                   (0x2UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x04000000 */
+#define RCC_PLLCFGR_PLLR_0                   (0x0UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x00000000 */
+#define RCC_PLLCFGR_PLLR_1                   (0x1UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x01000000 */
+#define RCC_PLLCFGR_PLLR_2                   (0x2UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x02000000 */
+#define RCC_PLLCFGR_PLLR_3                   (0x3UL << RCC_PLLCFGR_PLLR_Pos)   /*!< 0x03000000 */
 
 /********************  Bit definition for RCC_PLLSAI1CFGR register  ************/
 #define RCC_PLLSAI1CFGR_PLLSAI1N_Pos         (8U)
@@ -1336,8 +1342,8 @@ void hw_rcc_set_main_clock_source(uint32_t source);
 uint32_t hw_rcc_get_main_clock_source(void);
 void hw_rcc_set_division_factor_for_main_pll(uint32_t factor);
 uint32_t hw_rcc_get_division_factor_for_main_pll(void);
-void hw_rcc_set_main_pll_multiplication_factor_for_vco(uint32_t factor);
-uint32_t hw_rcc_get_main_pll_multiplication_factor_for_vco(void);
+void hw_rcc_set_multiplication_factor_for_main_pll(uint32_t factor);
+uint32_t hw_rcc_get_multiplication_factor_for_main_pll(void);
 void hw_rcc_set_main_pll_sai3_clock_output_enable(void);
 void hw_rcc_set_main_pll_sai3_clock_output_disable(void);
 uint32_t hw_rcc_get_main_pll_sai3_clock_output_enable(void);

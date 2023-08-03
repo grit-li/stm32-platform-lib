@@ -2,7 +2,6 @@
 #define __SETM32_PLATFORM_HW_GPIO_H__
 
 #include <stdint.h>
-#include <stdbool.h>
 #include "cortex_m.h"
 #include "stm32_hw_reg_map.h"
 #include "stm32_bitops.h"
@@ -1190,12 +1189,12 @@ static inline struct GPIO_TypeDef* __GET_GPIOH_REGISTER__(void)
 
 void hw_gpio_set_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t mode);
 uint32_t hw_gpio_get_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask);
-void hw_gpio_set_output_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t type);
-uint32_t hw_gpio_get_output_mode(struct GPIO_TypeDef* GPIOx, uint32_t mask);
+void hw_gpio_set_output_type(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t type);
+uint32_t hw_gpio_get_output_type(struct GPIO_TypeDef* GPIOx, uint32_t mask);
 void hw_gpio_set_output_speed(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t speed);
 uint32_t hw_gpio_get_output_speed(struct GPIO_TypeDef* GPIOx, uint32_t mask);
-void hw_gpio_set_pull_up_down(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t pull);
-uint32_t hw_gpio_get_pull_up_down(struct GPIO_TypeDef* GPIOx, uint32_t mask);
+void hw_gpio_set_pull_up_pull_down(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t pull);
+uint32_t hw_gpio_get_pull_up_pull_down(struct GPIO_TypeDef* GPIOx, uint32_t mask);
 uint32_t hw_gpio_get_input_data(struct GPIO_TypeDef* GPIOx, uint32_t mask);
 void hw_gpio_set_output_data(struct GPIO_TypeDef* GPIOx, uint32_t mask, uint32_t value);
 uint32_t hw_gpio_get_output_data(struct GPIO_TypeDef* GPIOx, uint32_t mask);

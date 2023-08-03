@@ -11,6 +11,12 @@ SOURCES += hw/hw_scs.c
 SOURCES += hw/hw_flash.c
 SOURCES += hw/hw_gpio.c
 
-CFLAGS += -I$(TOP)/include -I$(TOP)/micro-libc/include
+SOURCES += hal/hal_rcc.c
+SOURCES += hal/hal_gpio.c
+
+SOURCES += src/rcc.c
+SOURCES += src/gpio.c
+
+CFLAGS += -I$(TOP)/include -I$(TOP)/micro-libc/include -I$(TOP)/stm32-platform
 
 include $(TOP)/Makefile.include

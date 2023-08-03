@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+#define NULL ((void*)0)
 int printf(const char *__restrict, ...) __stm32_platform_format__(__printf__, 1, 2);
 
 #ifdef __cplusplus

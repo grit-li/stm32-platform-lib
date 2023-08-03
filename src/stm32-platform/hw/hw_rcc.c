@@ -366,12 +366,12 @@ uint32_t hw_rcc_get_division_factor_for_main_pll(void)
     return (__GET_RCC_PLLCFGR__ & RCC_PLLCFGR_PLLM);
 }
 
-void hw_rcc_set_main_pll_multiplication_factor_for_vco(uint32_t factor)
+void hw_rcc_set_multiplication_factor_for_main_pll(uint32_t factor)
 {
     __BIT_COVER_SET__(__GET_RCC_PLLCFGR__, RCC_PLLCFGR_PLLN, factor);
 }
 
-uint32_t hw_rcc_get_main_pll_multiplication_factor_for_vco(void)
+uint32_t hw_rcc_get_multiplication_factor_for_main_pll(void)
 {
     return (__GET_RCC_PLLCFGR__ & RCC_PLLCFGR_PLLN);
 }
