@@ -22,8 +22,9 @@ void rcc_clock_setup_init(const struct rcc_clock_scale_t* clock)
     config.pllp_prescaler = clock->pllp_prescaler;
     hal_rcc_pll_clock_configure(&config);
     hal_rcc_system_clock_select(clock->system_clock_source);
+    hal_rcc_usart_clock_select(hal_usart_type_1, clock->usart1_source);
     hal_rcc_gpio_clock_enable();
-
+    hal_rcc_usart_clock_enable();
     rcc_update_clock_tree(clock);
 }
 

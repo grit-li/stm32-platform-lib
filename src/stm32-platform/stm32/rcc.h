@@ -264,6 +264,7 @@ struct rcc_clock_enable_t
     enum rcc_peripheral_clock_enable_e IOPEEN;
     enum rcc_peripheral_clock_enable_e IOPFEN;
     enum rcc_peripheral_clock_enable_e IOPGEN;
+    enum rcc_peripheral_clock_enable_e USART1EN;
 };
 
 struct rcc_clock_scale_t

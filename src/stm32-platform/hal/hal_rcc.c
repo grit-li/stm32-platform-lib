@@ -178,6 +178,17 @@ uint32_t hal_rcc_system_clock_select(enum rcc_system_clock_source_e source)
     return stm32_errcode_success;
 }
 
+uint32_t hal_rcc_usart_clock_select(enum hal_usart_type_e usart, enum rcc_usart_clock_source_e source)
+{
+    switch(usart) {
+        case hal_usart_type_1:
+            hw_rcc_select_usart1_clock_source(RCC_CCIPR_USART1SEL_0);
+        default:
+            break;
+    }
+    return stm32_errcode_success;
+}
+
 uint32_t hal_rcc_gpio_clock_enable(void)
 {
     hw_rcc_set_gpioa_clock_enable();
@@ -188,5 +199,13 @@ uint32_t hal_rcc_gpio_clock_enable(void)
     hw_rcc_set_gpiof_clock_enable();
     hw_rcc_set_gpiog_clock_enable();
     hw_rcc_set_gpioh_clock_enable();
+    return stm32_errcode_success;
+}
+
+uint32_t hal_rcc_usart_clock_enable(void)
+{
+    hw_rcc_set_usart1_clock_enable();
+    // hw_rcc_set_usart2_clock_enable();
+    // hw_rcc_set_usart3_clock_enable();
     return stm32_errcode_success;
 }
