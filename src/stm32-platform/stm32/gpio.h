@@ -12,7 +12,7 @@ extern "C" {
 typedef uint32_t HGPIO;
 #define HGPIO_NULL ((HGPIO)0xffffffff)
 
-#define MAKE_HGPIO(group, port, mode, alternate, status) (HGPIO)(((status & 0x000000FF) << 24) | ((mode & 0x000000FF) << 16) | ((port & 0x0000000F) << 12) | ((port & 0x0000000F) << 8) | ((group & 0x000000FF) << 0))
+#define MAKE_HGPIO(group, port, mode, alternate, status) (HGPIO)(((status & 0x000000FF) << 24) | ((mode & 0x000000FF) << 16) | ((alternate & 0x0000000F) << 12) | ((port & 0x0000000F) << 8) | ((group & 0x000000FF) << 0))
 
 #define HGPIO_GET_GROUP(hgpio)      (uint8_t)((hgpio >>  0) & 0x000000FF)
 #define HGPIO_GET_PORT(hgpio)       (uint8_t)((hgpio >>  8) & 0x0000000F)
