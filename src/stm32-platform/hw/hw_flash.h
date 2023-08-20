@@ -32,7 +32,7 @@ struct FLASH_TypeDef
     __IO uint32_t WRP2BR;           /*!< FLASH bank2 WRP area B address register,  Address offset: 0x50 */
 };
 
-#define FLASH                 ((struct FLASH_TypeDef *) SCS_BASE)
+#define FLASH                 ((struct FLASH_TypeDef *) FLASH_R_BASE)
 static inline struct FLASH_TypeDef* __GET_FLASH_REGISTER__(void)
 {
     return FLASH;
