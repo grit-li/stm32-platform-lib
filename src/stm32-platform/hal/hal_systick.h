@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 void hal_systick_select_clock_source(void);
+void hal_systick_exception_enable(void);
 void hal_systick_exception_disable(void);
 
 void hal_systick_set_reload(uint32_t value);

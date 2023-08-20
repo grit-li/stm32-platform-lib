@@ -155,6 +155,8 @@ uint32_t hw_scb_get_div_0_trp_enable(void);
 void hw_scb_set_vector_table_to_flash(uint32_t offset);
 void hw_scb_set_vector_table_to_ram(uint32_t offset);
 uint32_t hw_scb_get_vector_table(void);
+void hw_scb_set_priority(uint32_t irq, uint32_t priority);
+uint32_t hw_scb_get_priority(uint32_t irq);
 
 #ifdef __cplusplus
 }

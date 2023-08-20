@@ -17,11 +17,13 @@ SOURCES += hal/hal_rcc.c
 SOURCES += hal/hal_gpio.c
 SOURCES += hal/hal_usart.c
 SOURCES += hal/hal_systick.c
+SOURCES += hal/hal_interrupt_vector_table.c
 
 SOURCES += src/rcc.c
 SOURCES += src/gpio.c
 SOURCES += src/usart.c
 SOURCES += src/systick.c
+SOURCES += src/interrupt_vector_table.c
 
 CFLAGS += -I$(TOP)/include -I$(TOP)/micro-libc/include -I$(TOP)/stm32-platform
 

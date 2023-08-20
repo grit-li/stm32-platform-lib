@@ -10,10 +10,6 @@ extern "C" {
 
 void systick_init(void);
 
-void systick_delay_us(uint32_t);
-
-void systick_delay_ms(uint32_t);
-
 #ifdef __cplusplus
 }
 #endif

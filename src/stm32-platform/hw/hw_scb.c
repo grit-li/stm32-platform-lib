@@ -2,6 +2,7 @@
 #include "stm32_assert.h"
 
 #define AIRCR_VECTKEY_MASK           ((uint32_t)0x05FA0000)
+#define __NVIC_PRIO_BITS 3
 
 uint32_t hw_scb_get_cpuid(void)
 {
@@ -72,4 +73,13 @@ uint32_t hw_scb_get_vector_table(void)
     return (__GET_SCB_VTOR__ & (SCB_VTOR_TBLBASE | SCB_VTOR_TBLOFF));
 }
 
+void hw_scb_set_priority(uint32_t irq, uint32_t priority)
+{
+    __BIT_SET__(__GET_SCB_SHP__((irq & 0xFUL) - 4UL), (priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL);
+}
+
+uint32_t hw_scb_get_priority(uint32_t irq)
+{
+    return __GET_SCB_SHP__((irq & 0xFUL) - 4UL) >> (8U - __NVIC_PRIO_BITS);
+}
 

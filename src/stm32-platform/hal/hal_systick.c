@@ -7,6 +7,11 @@ void hal_systick_select_clock_source(void)
     hw_systick_select_clock_source(SysTick_CTRL_CLKSOURCE);
 }
 
+void hal_systick_exception_enable(void)
+{
+    hw_systick_exception_request_enable();
+}
+
 void hal_systick_exception_disable(void)
 {
     hw_systick_exception_request_disable();
