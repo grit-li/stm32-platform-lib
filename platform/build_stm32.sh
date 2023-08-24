@@ -1,7 +1,7 @@
 #!/bin/bash
 CWD=$PWD
 
-source /develop/toolchain-arm-none-eabi-minimum/environment-${1}.sh
+source /develop/toolchain-arm-none-eabi/environment-${1}.sh
 
 cd $CWD/../../src
 make rebuild

@@ -4,7 +4,6 @@ include $(TOP)/Makefile.func
 
 DIRS += stm32-platform
 DIRS += rtthread-nano
-DIRS += micro-libc
 
 .PHONY: rebuild all clean $(DIRS)
 all:

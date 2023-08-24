@@ -25,6 +25,6 @@ SOURCES += src/usart.c
 SOURCES += src/systick.c
 SOURCES += src/interrupt_vector_table.c
 
-CFLAGS += -I$(TOP)/include -I$(TOP)/micro-libc/include -I$(TOP)/stm32-platform
+LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform
 
 include $(TOP)/Makefile.include

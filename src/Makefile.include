@@ -29,15 +29,15 @@ $(OBJ_DIR) $(LIBS_PATH):
 
 $(OBJ_DIR)/%.o: %.cpp Makefile | $(OBJ_DIR)
 	@$(call PRINT_COMPILE_CPP,"$<")
-	@$(CXX) -c $(CXXFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.cpp=.lst)) $< -o $@
+	@$(CXX) -c $(CXXFLAGS) $(LOCAL_CXXFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.cpp=.lst)) $< -o $@
 
 $(OBJ_DIR)/%.o: %.c Makefile | $(OBJ_DIR)
 	@$(call PRINT_COMPILE_C,"$<")
-	@$(CC) -c $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	@$(CC) -c $(CFLAGS) $(LOCAL_CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(OBJ_DIR)/%.o: %.s Makefile | $(OBJ_DIR)
 	@$(call PRINT_COMPILE_ASM,"$<")
-	@$(AS) -c $(ASFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.s=.lst)) $< -o $@
+	@$(AS) -c $(ASFLAGS) $(LOCAL_ASFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.s=.lst)) $< -o $@
 
 $(LIBS_PATH)/$(TARGET).a: $(OBJECT_FILE) | $(LIBS_PATH) 
 	@$(call PRINT_COMPILE_STATIC_LIB,"$@")
