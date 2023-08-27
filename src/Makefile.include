@@ -24,6 +24,13 @@ clean:
 	@$(RM) -rf $(OBJ_DIR)
 	@$(RM) -rf $(LIBS_PATH)
 
+install:
+	@if test -f install.sh; then \
+		bash install.sh \
+	else \
+		$(ECHO) $(call FONT_COLOR_HIGHT_RED, "$$dir Have no Makefile"); \
+	fi
+
 $(OBJ_DIR) $(LIBS_PATH):
 	@$(MKDIR) -p $@
 

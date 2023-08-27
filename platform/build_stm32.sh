@@ -3,14 +3,14 @@ CWD=$PWD
 
 source /develop/toolchain-arm-none-eabi/environment-${1}.sh
 
+if [ -d $CWD/../../out ]
+then
+    rm -rf $CWD/../../out
+fi
+
+mkdir -p $CWD/../../out
+
 cd $CWD/../../src
 make rebuild
-
-if [ -d $CWD/../../sample ]
-then
-    cd $CWD/../../sample
-    make clean --no-print-directory
-    make all --no-print-directory
-    cp bin/* /mnt/hgfs/share/stm32
-    cd -
-fi
+make install
+cd -

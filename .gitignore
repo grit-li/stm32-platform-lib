@@ -6,3 +6,6 @@ obj
 !.gitignore
 !/platform
 !/src
+!/ldscripts
+
+!/BASE-VER
