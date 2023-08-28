@@ -24,6 +24,8 @@ SOURCES += libcpu/arm/common/showmem.c
 SOURCES += libcpu/arm/cortex-m4/context_gcc.s
 SOURCES += libcpu/arm/cortex-m4/cpuport.c
 
+SOURCES += bsp/board_stm32l475.c
+
 LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform -I$(TOP)/rtthread-nano/include
 
 include $(TOP)/Makefile.include

@@ -19,10 +19,7 @@
 
 #include <rtthread.h>
 
-#if               /* ARMCC */ (  (defined ( __CC_ARM ) && defined ( __TARGET_FPU_VFP ))    \
-                  /* Clang */ || (defined ( __CLANG_ARM ) && defined ( __VFP_FP__ ) && !defined(__SOFTFP__)) \
-                  /* IAR */   || (defined ( __ICCARM__ ) && defined ( __ARMVFP__ ))        \
-                  /* GNU */   || (defined ( __GNUC__ ) && defined ( __VFP_FP__ ) && !defined(__SOFTFP__)) )
+#if  /* GNU */ ( (defined ( __GNUC__ ) && defined ( __VFP_FP__ ) && !defined(__SOFTFP__)) )
 #define USE_FPU   1
 #else
 #define USE_FPU   0
@@ -196,7 +193,6 @@ void rt_hw_exception_install(rt_err_t (*exception_handle)(void *context))
 #define SCB_CFSR_BFSR   (*(volatile const unsigned char*)0xE000ED29)  /* Bus Fault Status Register */
 #define SCB_CFSR_UFSR   (*(volatile const unsigned short*)0xE000ED2A) /* Usage Fault Status Register */
 
-#ifdef RT_USING_FINSH
 static void usage_fault_track(void)
 {
     rt_kprintf("usage fault:\n");
@@ -360,7 +356,6 @@ static void hard_fault_track(void)
         rt_kprintf("debug event\n");
     }
 }
-#endif /* RT_USING_FINSH */
 
 struct exception_info
 {
@@ -402,25 +397,19 @@ void rt_hw_hard_fault_exception(struct exception_info *exception_info)
 
     if (exception_info->exc_return & (1 << 2))
     {
-        rt_kprintf("hard fault on thread: %s\r\n\r\n", rt_thread_self()->name);
-
-#ifdef RT_USING_FINSH
-        list_thread();
-#endif
+        rt_kprintf("hard fault on thread: %s\n\n", rt_thread_self()->name);
     }
     else
     {
-        rt_kprintf("hard fault on handler\r\n\r\n");
+        rt_kprintf("hard fault on handler\n\n");
     }
 
     if ( (exception_info->exc_return & 0x10) == 0)
     {
-        rt_kprintf("FPU active!\r\n");
+        rt_kprintf("FPU active!\n");
     }
 
-#ifdef RT_USING_FINSH
     hard_fault_track();
-#endif /* RT_USING_FINSH */
 
     while (1);
 }
@@ -454,53 +443,8 @@ RT_WEAK void rt_hw_cpu_reset(void)
  * @return return the index of the first bit set. If value is 0, then this function
  * shall return 0.
  */
-#if defined(__CC_ARM)
-__asm int __rt_ffs(int value)
-{
-    CMP     r0, #0x00
-    BEQ     exit
-
-    RBIT    r0, r0
-    CLZ     r0, r0
-    ADDS    r0, r0, #0x01
-
-exit
-    BX      lr
-}
-#elif defined(__CLANG_ARM)
-int __rt_ffs(int value)
-{
-    __asm volatile(
-        "CMP     r0, #0x00            \n"
-        "BEQ     1f                   \n"
-
-        "RBIT    r0, r0               \n"
-        "CLZ     r0, r0               \n"
-        "ADDS    r0, r0, #0x01        \n"
-
-        "1:                           \n"
-
-        : "=r"(value)
-        : "r"(value)
-    );
-    return value;
-}
-#elif defined(__IAR_SYSTEMS_ICC__)
-int __rt_ffs(int value)
-{
-    if (value == 0) return value;
-
-    asm("RBIT %0, %1" : "=r"(value) : "r"(value));
-    asm("CLZ  %0, %1" : "=r"(value) : "r"(value));
-    asm("ADDS %0, %1, #0x01" : "=r"(value) : "r"(value));
-
-    return value;
-}
-#elif defined(__GNUC__)
 int __rt_ffs(int value)
 {
     return __builtin_ffs(value);
 }
-#endif
-
 #endif

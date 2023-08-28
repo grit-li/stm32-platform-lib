@@ -20,14 +20,8 @@
 #include <rthw.h>
 #include <rtthread.h>
 
-#if defined (RT_USING_HOOK)
-#ifndef RT_USING_IDLE_HOOK
-#define RT_USING_IDLE_HOOK
-#endif
-#endif
-
 #ifndef IDLE_THREAD_STACK_SIZE
-#if defined (RT_USING_IDLE_HOOK) || defined(RT_USING_HEAP)
+#if defined(RT_USING_HEAP)
 #define IDLE_THREAD_STACK_SIZE  256
 #else
 #define IDLE_THREAD_STACK_SIZE  128
@@ -40,10 +34,8 @@ static struct rt_thread idle;
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_thread_stack[IDLE_THREAD_STACK_SIZE];
 
-#ifdef RT_USING_IDLE_HOOK
 #ifndef RT_IDLE_HOOK_LIST_SIZE
 #define RT_IDLE_HOOK_LIST_SIZE  4
-#endif
 
 static void (*idle_hook_list[RT_IDLE_HOOK_LIST_SIZE])(void);
 
@@ -181,7 +173,6 @@ static void rt_thread_idle_entry(void *parameter)
     while (1)
     {
 
-#ifdef RT_USING_IDLE_HOOK
         rt_size_t i;
 
         for (i = 0; i < RT_IDLE_HOOK_LIST_SIZE; i++)
@@ -191,7 +182,6 @@ static void rt_thread_idle_entry(void *parameter)
                 idle_hook_list[i]();
             }
         }
-#endif
 
         rt_thread_idle_excute();
 #ifdef RT_USING_PM

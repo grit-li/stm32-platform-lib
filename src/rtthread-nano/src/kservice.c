@@ -22,8 +22,7 @@
 #include <rtthread.h>
 #include <rthw.h>
 
-/* use precision */
-#define RT_PRINTF_PRECISION
+#define RT_CONSOLEBUF_SIZE          128
 
 /**
  * @addtogroup KernelService
@@ -34,7 +33,7 @@
 /* global errno in RT-Thread */
 static volatile int __rt_errno;
 
-#if defined(RT_USING_DEVICE) && defined(RT_USING_CONSOLE)
+#if defined(RT_USING_DEVICE)
 static rt_device_t _console_device = RT_NULL;
 #endif
 
@@ -118,75 +117,12 @@ int *_rt_errno(void)
  */
 void *rt_memset(void *s, int c, rt_ubase_t count)
 {
-#ifdef RT_USING_TINY_SIZE
     char *xs = (char *)s;
 
     while (count--)
         *xs++ = c;
 
     return s;
-#else
-#define LBLOCKSIZE      (sizeof(long))
-#define UNALIGNED(X)    ((long)X & (LBLOCKSIZE - 1))
-#define TOO_SMALL(LEN)  ((LEN) < LBLOCKSIZE)
-
-    unsigned int i;
-    char *m = (char *)s;
-    unsigned long buffer;
-    unsigned long *aligned_addr;
-    unsigned int d = c & 0xff;  /* To avoid sign extension, copy C to an
-                                unsigned variable.  */
-
-    if (!TOO_SMALL(count) && !UNALIGNED(s))
-    {
-        /* If we get this far, we know that n is large and m is word-aligned. */
-        aligned_addr = (unsigned long *)s;
-
-        /* Store D into each char sized location in BUFFER so that
-         * we can set large blocks quickly.
-         */
-        if (LBLOCKSIZE == 4)
-        {
-            buffer = (d << 8) | d;
-            buffer |= (buffer << 16);
-        }
-        else
-        {
-            buffer = 0;
-            for (i = 0; i < LBLOCKSIZE; i ++)
-                buffer = (buffer << 8) | d;
-        }
-
-        while (count >= LBLOCKSIZE * 4)
-        {
-            *aligned_addr++ = buffer;
-            *aligned_addr++ = buffer;
-            *aligned_addr++ = buffer;
-            *aligned_addr++ = buffer;
-            count -= 4 * LBLOCKSIZE;
-        }
-
-        while (count >= LBLOCKSIZE)
-        {
-            *aligned_addr++ = buffer;
-            count -= LBLOCKSIZE;
-        }
-
-        /* Pick up the remainder with a bytewise loop. */
-        m = (char *)aligned_addr;
-    }
-
-    while (count--)
-    {
-        *m++ = (char)d;
-    }
-
-    return s;
-
-#undef LBLOCKSIZE
-#undef UNALIGNED
-#undef TOO_SMALL
-#endif
 }
 
 /**
@@ -201,7 +137,6 @@ void *rt_memset(void *s, int c, rt_ubase_t count)
  */
 void *rt_memcpy(void *dst, const void *src, rt_ubase_t count)
 {
-#ifdef RT_USING_TINY_SIZE
     char *tmp = (char *)dst, *s = (char *)src;
     rt_ubase_t len;
 
@@ -217,58 +152,6 @@ void *rt_memcpy(void *dst, const void *src, rt_ubase_t count)
     }
 
     return dst;
-#else
-
-#define UNALIGNED(X, Y) \
-    (((long)X & (sizeof (long) - 1)) | ((long)Y & (sizeof (long) - 1)))
-#define BIGBLOCKSIZE    (sizeof (long) << 2)
-#define LITTLEBLOCKSIZE (sizeof (long))
-#define TOO_SMALL(LEN)  ((LEN) < BIGBLOCKSIZE)
-
-    char *dst_ptr = (char *)dst;
-    char *src_ptr = (char *)src;
-    long *aligned_dst;
-    long *aligned_src;
-    int len = count;
-
-    /* If the size is small, or either SRC or DST is unaligned,
-    then punt into the byte copy loop.  This should be rare. */
-    if (!TOO_SMALL(len) && !UNALIGNED(src_ptr, dst_ptr))
-    {
-        aligned_dst = (long *)dst_ptr;
-        aligned_src = (long *)src_ptr;
-
-        /* Copy 4X long words at a time if possible. */
-        while (len >= BIGBLOCKSIZE)
-        {
-            *aligned_dst++ = *aligned_src++;
-            *aligned_dst++ = *aligned_src++;
-            *aligned_dst++ = *aligned_src++;
-            *aligned_dst++ = *aligned_src++;
-            len -= BIGBLOCKSIZE;
-        }
-
-        /* Copy one long word at a time if possible. */
-        while (len >= LITTLEBLOCKSIZE)
-        {
-            *aligned_dst++ = *aligned_src++;
-            len -= LITTLEBLOCKSIZE;
-        }
-
-        /* Pick up any residual with a byte copier. */
-        dst_ptr = (char *)aligned_dst;
-        src_ptr = (char *)aligned_src;
-    }
-
-    while (len--)
-        *dst_ptr++ = *src_ptr++;
-
-    return dst;
-#undef UNALIGNED
-#undef BIGBLOCKSIZE
-#undef LITTLEBLOCKSIZE
-#undef TOO_SMALL
-#endif
 }
 
 /**
@@ -509,9 +392,6 @@ char *rt_strdup(const char *s)
     return tmp;
 }
 
-#if defined(__CC_ARM) || defined(__CLANG_ARM)
-char *strdup(const char *s) __attribute__((alias("rt_strdup")));
-#endif
 #endif
 
 /**
@@ -586,7 +466,6 @@ rt_inline int skip_atoi(const char **s)
 #define SPECIAL     (1 << 5)    /* 0x */
 #define LARGE       (1 << 6)    /* use 'ABCDEF' instead of 'abcdef' */
 
-#ifdef RT_PRINTF_PRECISION
 static char *print_number(char *buf,
                           char *end,
 #ifdef RT_PRINTF_LONGLONG
@@ -598,18 +477,6 @@ static char *print_number(char *buf,
                           int   s,
                           int   precision,
                           int   type)
-#else
-static char *print_number(char *buf,
-                          char *end,
-#ifdef RT_PRINTF_LONGLONG
-                          long long  num,
-#else
-                          long  num,
-#endif
-                          int   base,
-                          int   s,
-                          int   type)
-#endif
 {
     char c, sign;
 #ifdef RT_PRINTF_LONGLONG
@@ -666,13 +533,9 @@ static char *print_number(char *buf,
             tmp[i++] = digits[divide(&num, base)];
     }
 
-#ifdef RT_PRINTF_PRECISION
     if (i > precision)
         precision = i;
     size -= precision;
-#else
-    size -= i;
-#endif
 
     if (!(type & (ZEROPAD | LEFT)))
     {
@@ -731,14 +594,12 @@ static char *print_number(char *buf,
         }
     }
 
-#ifdef RT_PRINTF_PRECISION
     while (i < precision--)
     {
         if (buf < end)
             *buf = '0';
         ++ buf;
     }
-#endif
 
     /* put number in the temporary buffer */
     while (i-- > 0 && (precision_bak != 0))
@@ -777,9 +638,7 @@ rt_int32_t rt_vsnprintf(char       *buf,
     rt_uint8_t qualifier;       /* 'h', 'l', or 'L' for integer fields */
     rt_int32_t field_width;     /* width of output field */
 
-#ifdef RT_PRINTF_PRECISION
     int precision;      /* min. # of digits for integers and max for a string */
-#endif
 
     str = buf;
     end = buf + size;
@@ -831,7 +690,6 @@ rt_int32_t rt_vsnprintf(char       *buf,
             }
         }
 
-#ifdef RT_PRINTF_PRECISION
         /* get the precision */
         precision = -1;
         if (*fmt == '.')
@@ -846,7 +704,6 @@ rt_int32_t rt_vsnprintf(char       *buf,
             }
             if (precision < 0) precision = 0;
         }
-#endif
         /* get the conversion qualifier */
         qualifier = 0;
 #ifdef RT_PRINTF_LONGLONG
@@ -899,9 +756,7 @@ rt_int32_t rt_vsnprintf(char       *buf,
             if (!s) s = "(NULL)";
 
             for (len = 0; (len != field_width) && (s[len] != '\0'); len++);
-#ifdef RT_PRINTF_PRECISION
             if (precision > 0 && len > precision) len = precision;
-#endif
 
             if (!(flags & LEFT))
             {
@@ -932,15 +787,9 @@ rt_int32_t rt_vsnprintf(char       *buf,
                 field_width = sizeof(void *) << 1;
                 flags |= ZEROPAD;
             }
-#ifdef RT_PRINTF_PRECISION
             str = print_number(str, end,
                                (long)va_arg(args, void *),
                                16, field_width, precision, flags);
-#else
-            str = print_number(str, end,
-                               (long)va_arg(args, void *),
-                               16, field_width, flags);
-#endif
             continue;
 
         case '%':
@@ -1001,11 +850,7 @@ rt_int32_t rt_vsnprintf(char       *buf,
             num = va_arg(args, rt_uint32_t);
             if (flags & SIGN) num = (rt_int32_t)num;
         }
-#ifdef RT_PRINTF_PRECISION
         str = print_number(str, end, num, base, field_width, precision, flags);
-#else
-        str = print_number(str, end, num, base, field_width, flags);
-#endif
     }
 
     if (size > 0)
@@ -1071,8 +916,6 @@ rt_int32_t rt_sprintf(char *buf, const char *format, ...)
 
     return n;
 }
-
-#ifdef RT_USING_CONSOLE
 
 #ifdef RT_USING_DEVICE
 /**
@@ -1194,7 +1037,6 @@ void rt_kprintf(const char *fmt, ...)
 #endif
     va_end(args);
 }
-#endif
 
 #ifdef RT_USING_HEAP
 /**

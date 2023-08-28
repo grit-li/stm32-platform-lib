@@ -1,5 +1,8 @@
 ENTRY(reset_handler)
 
+_Min_Heap_Size = 0x200;
+_Min_Stack_Size = 0x400;
+
 MEMORY
 {
     RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 96K
@@ -54,6 +57,17 @@ SECTIONS
         . = ALIGN(4);
         _ebss = .;
     } >RAM
+
+    ._user_heap_stack :
+    {
+        . = ALIGN(8);
+        PROVIDE ( end = . );
+        PROVIDE ( _end = . );
+        . = . + _Min_Heap_Size;
+        . = . + _Min_Stack_Size;
+        . = ALIGN(8);
+    } >RAM
+
 }
 
 PROVIDE(_stack = ORIGIN(RAM) + LENGTH(RAM));

@@ -36,37 +36,17 @@
 extern "C" {
 #endif
 
-/* the debug log will force enable when RT_DEBUG macro is defined */
-#if defined(RT_DEBUG) && !defined(DBG_ENABLE)
-#define DBG_ENABLE
-#endif
-
-/* it will force output color log when RT_DEBUG_COLOR macro is defined */
-#if defined(RT_DEBUG_COLOR) && !defined(DBG_COLOR)
-#define DBG_COLOR
-#endif
-
-#if defined(RT_USING_ULOG)
-/* using ulog compatible with rtdbg  */
-#include <ulog.h>
-#else
-
 /* DEBUG level */
 #define DBG_ERROR           0
 #define DBG_WARNING         1
 #define DBG_INFO            2
 #define DBG_LOG             3
 
-#ifdef DBG_TAG
-#ifndef DBG_SECTION_NAME
-#define DBG_SECTION_NAME    DBG_TAG
-#endif
+#ifndef DBG_TAG
+    #define DBG_SECTION_NAME    DBG_TAG
 #else
-/* compatible with old version */
-#ifndef DBG_SECTION_NAME
-#define DBG_SECTION_NAME    "DBG"
+    #define DBG_SECTION_NAME    "DBG"
 #endif
-#endif /* DBG_TAG */
 
 #ifdef DBG_ENABLE
 
@@ -177,8 +157,6 @@ extern "C" {
 #endif
 
 #define LOG_RAW(...)         dbg_raw(__VA_ARGS__)
-
-#endif /* defined(RT_USING_ULOG) && define(DBG_ENABLE) */
 
 #ifdef __cplusplus
 }

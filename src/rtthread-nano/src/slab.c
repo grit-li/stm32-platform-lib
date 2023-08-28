@@ -913,17 +913,6 @@ void rt_memory_info(rt_uint32_t *total,
         *max_used = max_mem;
 }
 
-#ifdef RT_USING_FINSH
-#include <finsh.h>
-
-void list_mem(void)
-{
-    rt_kprintf("total memory: %d\n", heap_end - heap_start);
-    rt_kprintf("used memory : %d\n", used_mem);
-    rt_kprintf("maximum allocated memory: %d\n", max_mem);
-}
-FINSH_FUNCTION_EXPORT(list_mem, list memory usage information)
-#endif
 #endif
 
 /**@}*/

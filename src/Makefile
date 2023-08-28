@@ -2,6 +2,7 @@ TOP = .
 
 include $(TOP)/Makefile.func
 
+DIRS += cutils
 DIRS += stm32-platform
 DIRS += rtthread-nano
 

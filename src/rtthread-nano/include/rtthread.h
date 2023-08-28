@@ -37,8 +37,7 @@ extern "C" {
  * kernel object interface
  */
 void rt_system_object_init(void);
-struct rt_object_information *
-rt_object_get_information(enum rt_object_class_type type);
+struct rt_object_information* rt_object_get_information(enum rt_object_class_type type);
 int rt_object_get_length(enum rt_object_class_type type);
 int rt_object_get_pointers(enum rt_object_class_type type, rt_object_t *pointers, int maxlen);
 
@@ -156,7 +155,7 @@ void rt_thread_inited_sethook (void (*hook)(rt_thread_t thread));
  * idle thread interface
  */
 void rt_thread_idle_init(void);
-#if defined(RT_USING_HOOK) || defined(RT_USING_IDLE_HOOK)
+#if defined(RT_USING_HOOK)
 rt_err_t rt_thread_idle_sethook(void (*hook)(void));
 rt_err_t rt_thread_idle_delhook(void (*hook)(void));
 #endif
@@ -436,11 +435,6 @@ void rt_interrupt_enter_sethook(void (*hook)(void));
 void rt_interrupt_leave_sethook(void (*hook)(void));
 #endif
 
-#ifdef RT_USING_COMPONENTS_INIT
-void rt_components_init(void);
-void rt_components_board_init(void);
-#endif
-
 /**
  * @addtogroup KernelService
  */
@@ -450,19 +444,15 @@ void rt_components_board_init(void);
 /*
  * general kernel service
  */
-#ifndef RT_USING_CONSOLE
-#define rt_kprintf(...)
-#define rt_kputs(str)
-#else
+
 void rt_kprintf(const char *fmt, ...);
 void rt_kputs(const char *str);
-#endif
 rt_int32_t rt_vsprintf(char *dest, const char *format, va_list arg_ptr);
 rt_int32_t rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list args);
 rt_int32_t rt_sprintf(char *buf, const char *format, ...);
 rt_int32_t rt_snprintf(char *buf, rt_size_t size, const char *format, ...);
 
-#if defined(RT_USING_DEVICE) && defined(RT_USING_CONSOLE)
+#if defined(RT_USING_DEVICE)
 rt_device_t rt_console_set_device(const char *name);
 rt_device_t rt_console_get_device(void);
 #endif
@@ -470,11 +460,6 @@ rt_device_t rt_console_get_device(void);
 rt_err_t rt_get_errno(void);
 void rt_set_errno(rt_err_t no);
 int *_rt_errno(void);
-#if !defined(RT_USING_NEWLIB) && !defined(_WIN32)
-#ifndef errno
-#define errno    *_rt_errno()
-#endif
-#endif
 
 int __rt_ffs(int value);
 
@@ -486,10 +471,6 @@ rt_int32_t rt_strcmp(const char *cs, const char *ct);
 rt_size_t rt_strlen(const char *src);
 rt_size_t rt_strnlen(const char *s, rt_ubase_t maxlen);
 char *rt_strdup(const char *s);
-#if defined(__CC_ARM) || defined(__CLANG_ARM)
-/* leak strdup interface */
-char* strdup(const char* str);
-#endif
 
 char *rt_strstr(const char *str1, const char *str2);
 rt_int32_t rt_sscanf(const char *buf, const char *fmt, ...);
@@ -506,10 +487,6 @@ void rt_assert_set_hook(void (*hook)(const char *ex, const char *func, rt_size_t
 
 void rt_assert_handler(const char *ex, const char *func, rt_size_t line);
 #endif /* RT_DEBUG */
-
-#ifdef RT_USING_FINSH
-#include <finsh_api.h>
-#endif
 
 /**@}*/
 

@@ -104,132 +104,15 @@ typedef rt_base_t                       rt_off_t;       /**< Type for offset */
 #define RT_MB_ENTRY_MAX                 RT_UINT16_MAX   /**< Maxium number of mailbox .entry */
 #define RT_MQ_ENTRY_MAX                 RT_UINT16_MAX   /**< Maxium number of message queue .entry */
 
-#if defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
-#define __CLANG_ARM
-#endif
-
 /* Compiler Related Definitions */
-#if defined(__CC_ARM) || defined(__CLANG_ARM)           /* ARM Compiler */
-    #include <stdarg.h>
-    #define SECTION(x)                  __attribute__((section(x)))
-    #define RT_UNUSED                   __attribute__((unused))
-    #define RT_USED                     __attribute__((used))
-    #define ALIGN(n)                    __attribute__((aligned(n)))
+#include <stdarg.h>
 
-    #define RT_WEAK                     __attribute__((weak))
-    #define rt_inline                   static __inline
-
-#elif defined (__IAR_SYSTEMS_ICC__)     /* for IAR Compiler */
-    #include <stdarg.h>
-    #define SECTION(x)                  @ x
-    #define RT_UNUSED
-    #define RT_USED                     __root
-    #define PRAGMA(x)                   _Pragma(#x)
-    #define ALIGN(n)                    PRAGMA(data_alignment=n)
-    #define RT_WEAK                     __weak
-    #define rt_inline                   static inline
-
-#elif defined (__GNUC__)                /* GNU GCC Compiler */
-    #ifdef RT_USING_NEWLIB
-        #include <stdarg.h>
-    #else
-        /* the version of GNU GCC must be greater than 4.x */
-        typedef __builtin_va_list       __gnuc_va_list;
-        typedef __gnuc_va_list          va_list;
-        #define va_start(v,l)           __builtin_va_start(v,l)
-        #define va_end(v)               __builtin_va_end(v)
-        #define va_arg(v,l)             __builtin_va_arg(v,l)
-    #endif
-
-    #define SECTION(x)                  __attribute__((section(x)))
-    #define RT_UNUSED                   __attribute__((unused))
-    #define RT_USED                     __attribute__((used))
-    #define ALIGN(n)                    __attribute__((aligned(n)))
-    #define RT_WEAK                     __attribute__((weak))
-    #define rt_inline                   static __inline
-#elif defined (__ADSPBLACKFIN__)        /* for VisualDSP++ Compiler */
-    #include <stdarg.h>
-    #define SECTION(x)                  __attribute__((section(x)))
-    #define RT_UNUSED                   __attribute__((unused))
-    #define RT_USED                     __attribute__((used))
-    #define ALIGN(n)                    __attribute__((aligned(n)))
-    #define RT_WEAK                     __attribute__((weak))
-    #define rt_inline                   static inline
-#elif defined (_MSC_VER)
-    #include <stdarg.h>
-    #define SECTION(x)
-    #define RT_UNUSED
-    #define RT_USED
-    #define ALIGN(n)                    __declspec(align(n))
-    #define RT_WEAK
-    #define rt_inline                   static __inline
-#elif defined (__TI_COMPILER_VERSION__)
-    #include <stdarg.h>
-    /* The way that TI compiler set section is different from other(at least
-     * GCC and MDK) compilers. See ARM Optimizing C/C++ Compiler 5.9.3 for more
-     * details. */
-    #define SECTION(x)
-    #define RT_UNUSED
-    #define RT_USED
-    #define PRAGMA(x)                   _Pragma(#x)
-    #define ALIGN(n)
-    #define RT_WEAK
-    #define rt_inline                   static inline
-#else
-    #error not supported tool chain
-#endif
-
-/* initialization export */
-#ifdef RT_USING_COMPONENTS_INIT
-typedef int (*init_fn_t)(void);
-#ifdef _MSC_VER /* we do not support MS VC++ compiler */
-    #define INIT_EXPORT(fn, level)
-#else
-    #if RT_DEBUG_INIT
-        struct rt_init_desc
-        {
-            const char* fn_name;
-            const init_fn_t fn;
-        };
-        #define INIT_EXPORT(fn, level)                                                       \
-            const char __rti_##fn##_name[] = #fn;                                            \
-            RT_USED const struct rt_init_desc __rt_init_desc_##fn SECTION(".rti_fn." level) = \
-            { __rti_##fn##_name, fn};
-    #else
-        #define INIT_EXPORT(fn, level)                                                       \
-            RT_USED const init_fn_t __rt_init_##fn SECTION(".rti_fn." level) = fn
-    #endif
-#endif
-#else
-#define INIT_EXPORT(fn, level)
-#endif
-
-/* board init routines will be called in board_init() function */
-#define INIT_BOARD_EXPORT(fn)           INIT_EXPORT(fn, "1")
-
-/* pre/device/component/env/app init routines will be called in init_thread */
-/* components pre-initialization (pure software initilization) */
-#define INIT_PREV_EXPORT(fn)            INIT_EXPORT(fn, "2")
-/* device initialization */
-#define INIT_DEVICE_EXPORT(fn)          INIT_EXPORT(fn, "3")
-/* components initialization (dfs, lwip, ...) */
-#define INIT_COMPONENT_EXPORT(fn)       INIT_EXPORT(fn, "4")
-/* environment initialization (mount disk, ...) */
-#define INIT_ENV_EXPORT(fn)             INIT_EXPORT(fn, "5")
-/* appliation initialization (rtgui application etc ...) */
-#define INIT_APP_EXPORT(fn)             INIT_EXPORT(fn, "6")
-
-#if !defined(RT_USING_FINSH)
-/* define these to empty, even if not include finsh.h file */
-#define FINSH_FUNCTION_EXPORT(name, desc)
-#define FINSH_FUNCTION_EXPORT_ALIAS(name, alias, desc)
-#define FINSH_VAR_EXPORT(name, type, desc)
-
-#define MSH_CMD_EXPORT(command, desc)
-#define MSH_CMD_EXPORT_ALIAS(command, alias, desc)
-#elif !defined(FINSH_USING_SYMTAB)
-#define FINSH_FUNCTION_EXPORT_CMD(name, cmd, desc)
-#endif
+#define SECTION(x)                  __attribute__((section(x)))
+#define RT_UNUSED                   __attribute__((unused))
+#define RT_USED                     __attribute__((used))
+#define ALIGN(n)                    __attribute__((aligned(n)))
+#define RT_WEAK                     __attribute__((weak))
+#define rt_inline                   static __inline
 
 /* event length */
 #define RT_EVENT_LENGTH                 32
@@ -837,17 +720,7 @@ struct rt_device
     rt_err_t (*rx_indicate)(rt_device_t dev, rt_size_t size);
     rt_err_t (*tx_complete)(rt_device_t dev, void *buffer);
 
-#ifdef RT_USING_DEVICE_OPS
     const struct rt_device_ops *ops;
-#else
-    /* common device interface */
-    rt_err_t  (*init)   (rt_device_t dev);
-    rt_err_t  (*open)   (rt_device_t dev, rt_uint16_t oflag);
-    rt_err_t  (*close)  (rt_device_t dev);
-    rt_size_t (*read)   (rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size);
-    rt_size_t (*write)  (rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size);
-    rt_err_t  (*control)(rt_device_t dev, int cmd, void *args);
-#endif
 
     void                     *user_data;                /**< device private data */
 };
@@ -858,18 +731,5 @@ struct rt_device
 #ifdef __cplusplus
 }
 #endif
-
-#ifdef __cplusplus
-/* RT-Thread definitions for C++ */
-namespace rtthread {
-
-enum TICK_WAIT {
-    WAIT_NONE = 0,
-    WAIT_FOREVER = -1,
-};
-
-}
-
-#endif /* end of __cplusplus */
 
 #endif
