@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+int rtthread_startup(void);
+
 /**
  * @addtogroup KernelObject
  */

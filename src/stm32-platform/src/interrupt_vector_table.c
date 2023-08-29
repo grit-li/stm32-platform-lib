@@ -109,10 +109,6 @@ void debug_monitor_handler(void)
 {
     
 }
-void pendsv_handler(void)
-{
-    
-}
 void systick_handler(void)
 {
     exec_irq_handler(irq_vector_type_systick);

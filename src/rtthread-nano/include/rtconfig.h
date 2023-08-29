@@ -18,7 +18,9 @@
 #define RT_USING_EVENT
 #define RT_USING_MAILBOX
 #define RT_USING_MESSAGEQUEUE
-#define RT_USING_HEAP
+// #define RT_USING_HEAP
 #define RT_USING_SMALL_MEM
+
+#define RT_DEBUG
 
 #endif

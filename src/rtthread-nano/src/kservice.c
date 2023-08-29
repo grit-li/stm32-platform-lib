@@ -18,7 +18,7 @@
  * 2013-09-24     aozima       make sure the device is in STREAM mode when used by rt_kprintf.
  * 2015-07-06     Bernard      Add rt_assert_handler routine.
  */
-
+#include <stdio.h>
 #include <rtthread.h>
 #include <rthw.h>
 
@@ -969,7 +969,7 @@ rt_device_t rt_console_set_device(const char *name)
 
 RT_WEAK void rt_hw_console_output(const char *str)
 {
-    /* empty console output */
+    printf("%s", str);
 }
 
 /**
