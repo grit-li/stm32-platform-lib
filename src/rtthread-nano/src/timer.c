@@ -47,10 +47,8 @@ static rt_uint8_t timer_thread_stack[RT_TIMER_THREAD_STACK_SIZE];
 #endif
 
 #ifdef RT_USING_HOOK
-extern void (*rt_object_take_hook)(struct rt_object *object);
-extern void (*rt_object_put_hook)(struct rt_object *object);
-static void (*rt_timer_enter_hook)(struct rt_timer *timer);
-static void (*rt_timer_exit_hook)(struct rt_timer *timer);
+static void (*rt_timer_enter_hook)(struct rt_timer *timer) = RT_NULL;
+static void (*rt_timer_exit_hook)(struct rt_timer *timer) = RT_NULL;
 
 /**
  * @addtogroup Hook
@@ -64,7 +62,7 @@ static void (*rt_timer_exit_hook)(struct rt_timer *timer);
  *
  * @param hook the hook function
  */
-void rt_timer_enter_sethook(void (*hook)(struct rt_timer *timer))
+void rt_timer_enter_sethook(timer_hook hook)
 {
     rt_timer_enter_hook = hook;
 }
@@ -75,9 +73,18 @@ void rt_timer_enter_sethook(void (*hook)(struct rt_timer *timer))
  *
  * @param hook the hook function
  */
-void rt_timer_exit_sethook(void (*hook)(struct rt_timer *timer))
+void rt_timer_exit_sethook(timer_hook hook)
 {
     rt_timer_exit_hook = hook;
+}
+
+timer_hook rt_timer_enter_gethook(void)
+{
+    return rt_timer_enter_hook;
+}
+timer_hook rt_timer_exit_gethook(void)
+{
+    return rt_timer_exit_hook;
 }
 
 /**@}*/
@@ -328,7 +335,7 @@ rt_err_t rt_timer_start(rt_timer_t timer)
     /* change status of timer */
     timer->parent.flag &= ~RT_TIMER_FLAG_ACTIVATED;
 
-    RT_OBJECT_HOOK_CALL(rt_object_take_hook, (&(timer->parent)));
+    RT_OBJECT_HOOK_CALL(rt_object_take_gethook(), (&(timer->parent)));
 
     /*
      * get timeout tick,
@@ -441,7 +448,7 @@ rt_err_t rt_timer_stop(rt_timer_t timer)
     if (!(timer->parent.flag & RT_TIMER_FLAG_ACTIVATED))
         return -RT_ERROR;
 
-    RT_OBJECT_HOOK_CALL(rt_object_put_hook, (&(timer->parent)));
+    RT_OBJECT_HOOK_CALL(rt_object_put_gethook(), (&(timer->parent)));
 
     /* disable interrupt */
     level = rt_hw_interrupt_disable();

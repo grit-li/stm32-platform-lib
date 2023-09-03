@@ -95,11 +95,11 @@ static struct rt_object_information rt_object_container[RT_Object_Info_Unknown] 
 };
 
 #ifdef RT_USING_HOOK
-static void (*rt_object_attach_hook)(struct rt_object *object);
-static void (*rt_object_detach_hook)(struct rt_object *object);
-void (*rt_object_trytake_hook)(struct rt_object *object);
-void (*rt_object_take_hook)(struct rt_object *object);
-void (*rt_object_put_hook)(struct rt_object *object);
+static void (*rt_object_attach_hook)(struct rt_object *object) = RT_NULL;
+static void (*rt_object_detach_hook)(struct rt_object *object) = RT_NULL;
+static void (*rt_object_trytake_hook)(struct rt_object *object) = RT_NULL;
+static void (*rt_object_take_hook)(struct rt_object *object) = RT_NULL;
+static void (*rt_object_put_hook)(struct rt_object *object) = RT_NULL;
 
 /**
  * @addtogroup Hook
@@ -113,7 +113,7 @@ void (*rt_object_put_hook)(struct rt_object *object);
  *
  * @param hook the hook function
  */
-void rt_object_attach_sethook(void (*hook)(struct rt_object *object))
+void rt_object_attach_sethook(object_hook hook)
 {
     rt_object_attach_hook = hook;
 }
@@ -124,7 +124,7 @@ void rt_object_attach_sethook(void (*hook)(struct rt_object *object))
  *
  * @param hook the hook function
  */
-void rt_object_detach_sethook(void (*hook)(struct rt_object *object))
+void rt_object_detach_sethook(object_hook hook)
 {
     rt_object_detach_hook = hook;
 }
@@ -142,7 +142,7 @@ void rt_object_detach_sethook(void (*hook)(struct rt_object *object))
  *
  * @param hook the hook function
  */
-void rt_object_trytake_sethook(void (*hook)(struct rt_object *object))
+void rt_object_trytake_sethook(object_hook hook)
 {
     rt_object_trytake_hook = hook;
 }
@@ -161,7 +161,7 @@ void rt_object_trytake_sethook(void (*hook)(struct rt_object *object))
  *
  * @param hook the hook function
  */
-void rt_object_take_sethook(void (*hook)(struct rt_object *object))
+void rt_object_take_sethook(object_hook hook)
 {
     rt_object_take_hook = hook;
 }
@@ -172,11 +172,31 @@ void rt_object_take_sethook(void (*hook)(struct rt_object *object))
  *
  * @param hook the hook function
  */
-void rt_object_put_sethook(void (*hook)(struct rt_object *object))
+void rt_object_put_sethook(object_hook hook)
 {
     rt_object_put_hook = hook;
 }
 
+object_hook rt_object_attach_gethook(void)
+{
+    return *rt_object_attach_hook;
+}
+object_hook rt_object_detach_gethook(void)
+{
+    return rt_object_detach_hook;
+}
+object_hook rt_object_trytake_gethook(void)
+{
+    return rt_object_trytake_hook;
+}
+object_hook rt_object_take_gethook(void)
+{
+    return rt_object_take_hook;
+}
+object_hook rt_object_put_gethook(void)
+{
+    return rt_object_put_hook;
+}
 /**@}*/
 #endif
 

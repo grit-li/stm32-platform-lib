@@ -15,9 +15,8 @@
 #include <rtthread.h>
 
 #ifdef RT_USING_HOOK
-
-static void (*rt_interrupt_enter_hook)(void);
-static void (*rt_interrupt_leave_hook)(void);
+static void (*rt_interrupt_enter_hook)(void) = RT_NULL;
+static void (*rt_interrupt_leave_hook)(void) = RT_NULL;
 
 /**
  * @ingroup Hook
@@ -25,7 +24,7 @@ static void (*rt_interrupt_leave_hook)(void);
  *
  * @note the hook function must be simple and never be blocked or suspend.
  */
-void rt_interrupt_enter_sethook(void (*hook)(void))
+void rt_interrupt_enter_sethook(interrupt_hook hook)
 {
     rt_interrupt_enter_hook = hook;
 }
@@ -35,9 +34,18 @@ void rt_interrupt_enter_sethook(void (*hook)(void))
  *
  * @note the hook function must be simple and never be blocked or suspend.
  */
-void rt_interrupt_leave_sethook(void (*hook)(void))
+void rt_interrupt_leave_sethook(interrupt_hook hook)
 {
     rt_interrupt_leave_hook = hook;
+}
+
+interrupt_hook rt_interrupt_enter_gethook(void)
+{
+    return rt_interrupt_enter_hook;
+}
+interrupt_hook rt_interrupt_leave_gethook(void)
+{
+    return rt_interrupt_leave_hook;
 }
 #endif
 

@@ -22,8 +22,8 @@
 #ifdef RT_USING_MEMPOOL
 
 #ifdef RT_USING_HOOK
-static void (*rt_mp_alloc_hook)(struct rt_mempool *mp, void *block);
-static void (*rt_mp_free_hook)(struct rt_mempool *mp, void *block);
+static void (*rt_mp_alloc_hook)(struct rt_mempool *mp, void *block) = RT_NULL;
+static void (*rt_mp_free_hook)(struct rt_mempool *mp, void *block) = RT_NULL;
 
 /**
  * @addtogroup Hook
@@ -51,6 +51,14 @@ void rt_mp_alloc_sethook(void (*hook)(struct rt_mempool *mp, void *block))
 void rt_mp_free_sethook(void (*hook)(struct rt_mempool *mp, void *block))
 {
     rt_mp_free_hook = hook;
+}
+void (*hook)(struct rt_mempool *mp, void *block) rt_mp_alloc_gethook(void)
+{
+    return rt_mp_alloc_hook;
+}
+void (*hook)(struct rt_mempool *mp, void *block) rt_mp_free_gethook(void)
+{
+    return rt_mp_free_hook;
 }
 
 /**@}*/

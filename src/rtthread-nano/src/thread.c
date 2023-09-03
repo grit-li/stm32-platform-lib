@@ -36,10 +36,9 @@ extern struct rt_thread *rt_current_thread;
 extern rt_list_t rt_thread_defunct;
 
 #ifdef RT_USING_HOOK
-
-static void (*rt_thread_suspend_hook)(rt_thread_t thread);
-static void (*rt_thread_resume_hook) (rt_thread_t thread);
-static void (*rt_thread_inited_hook) (rt_thread_t thread);
+static void (*rt_thread_suspend_hook)(rt_thread_t thread) = RT_NULL;
+static void (*rt_thread_resume_hook) (rt_thread_t thread) = RT_NULL;
+static void (*rt_thread_inited_hook) (rt_thread_t thread) = RT_NULL;
 
 /**
  * @ingroup Hook
@@ -49,7 +48,7 @@ static void (*rt_thread_inited_hook) (rt_thread_t thread);
  *
  * @note the hook function must be simple and never be blocked or suspend.
  */
-void rt_thread_suspend_sethook(void (*hook)(rt_thread_t thread))
+void rt_thread_suspend_sethook(thread_hook hook)
 {
     rt_thread_suspend_hook = hook;
 }
@@ -62,7 +61,7 @@ void rt_thread_suspend_sethook(void (*hook)(rt_thread_t thread))
  *
  * @note the hook function must be simple and never be blocked or suspend.
  */
-void rt_thread_resume_sethook(void (*hook)(rt_thread_t thread))
+void rt_thread_resume_sethook(thread_hook hook)
 {
     rt_thread_resume_hook = hook;
 }
@@ -73,11 +72,23 @@ void rt_thread_resume_sethook(void (*hook)(rt_thread_t thread))
  *
  * @param hook the specified hook function
  */
-void rt_thread_inited_sethook(void (*hook)(rt_thread_t thread))
+void rt_thread_inited_sethook(thread_hook hook)
 {
     rt_thread_inited_hook = hook;
 }
 
+thread_hook rt_thread_suspend_gethook(void)
+{
+    return rt_thread_suspend_hook;
+}
+thread_hook rt_thread_resume_gethook(void)
+{
+    return rt_thread_resume_hook;
+}
+thread_hook rt_thread_inited_gethook(void)
+{
+    return rt_thread_inited_hook;
+}
 #endif
 
 /* must be invoke witch rt_hw_interrupt_disable */

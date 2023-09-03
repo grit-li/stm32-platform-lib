@@ -51,7 +51,7 @@ rt_uint8_t rt_current_priority;
 rt_list_t rt_thread_defunct;
 
 #ifdef RT_USING_HOOK
-static void (*rt_scheduler_hook)(struct rt_thread *from, struct rt_thread *to);
+static void (*rt_scheduler_hook)(struct rt_thread *from, struct rt_thread *to) = RT_NULL;
 
 /**
  * @addtogroup Hook
@@ -65,12 +65,15 @@ static void (*rt_scheduler_hook)(struct rt_thread *from, struct rt_thread *to);
  *
  * @param hook the hook function
  */
-void
-rt_scheduler_sethook(void (*hook)(struct rt_thread *from, struct rt_thread *to))
+void rt_scheduler_sethook(scheduler_hook hook)
 {
     rt_scheduler_hook = hook;
 }
 
+scheduler_hook rt_scheduler_gethook(void)
+{
+    return rt_scheduler_hook;
+}
 /**@}*/
 #endif
 

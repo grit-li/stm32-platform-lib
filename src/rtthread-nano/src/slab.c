@@ -63,42 +63,6 @@
 static rt_size_t used_mem, max_mem;
 #endif
 
-#ifdef RT_USING_HOOK
-static void (*rt_malloc_hook)(void *ptr, rt_size_t size);
-static void (*rt_free_hook)(void *ptr);
-
-/**
- * @addtogroup Hook
- */
-
-/**@{*/
-
-/**
- * This function will set a hook function, which will be invoked when a memory
- * block is allocated from heap memory.
- *
- * @param hook the hook function
- */
-void rt_malloc_sethook(void (*hook)(void *ptr, rt_size_t size))
-{
-    rt_malloc_hook = hook;
-}
-
-/**
- * This function will set a hook function, which will be invoked when a memory
- * block is released to heap memory.
- *
- * @param hook the hook function
- */
-void rt_free_sethook(void (*hook)(void *ptr))
-{
-    rt_free_hook = hook;
-}
-
-/**@}*/
-
-#endif
-
 /*
  * slab allocator implementation
  *

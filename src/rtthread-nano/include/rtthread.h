@@ -55,11 +55,18 @@ rt_uint8_t rt_object_get_type(rt_object_t object);
 rt_object_t rt_object_find(const char *name, rt_uint8_t type);
 
 #ifdef RT_USING_HOOK
-void rt_object_attach_sethook(void (*hook)(struct rt_object *object));
-void rt_object_detach_sethook(void (*hook)(struct rt_object *object));
-void rt_object_trytake_sethook(void (*hook)(struct rt_object *object));
-void rt_object_take_sethook(void (*hook)(struct rt_object *object));
-void rt_object_put_sethook(void (*hook)(struct rt_object *object));
+typedef void (*object_hook)(struct rt_object *object);
+void rt_object_attach_sethook(object_hook hook);
+void rt_object_detach_sethook(object_hook hook);
+void rt_object_trytake_sethook(object_hook hook);
+void rt_object_take_sethook(object_hook hook);
+void rt_object_put_sethook(object_hook hook);
+
+object_hook rt_object_attach_gethook(void);
+object_hook rt_object_detach_gethook(void);
+object_hook rt_object_trytake_gethook(void);
+object_hook rt_object_take_gethook(void);
+object_hook rt_object_put_gethook(void);
 #endif
 
 /**@}*/
@@ -103,8 +110,12 @@ rt_tick_t rt_timer_next_timeout_tick(void);
 void rt_timer_check(void);
 
 #ifdef RT_USING_HOOK
-void rt_timer_enter_sethook(void (*hook)(struct rt_timer *timer));
-void rt_timer_exit_sethook(void (*hook)(struct rt_timer *timer));
+typedef void (*timer_hook)(struct rt_timer *timer);
+void rt_timer_enter_sethook(timer_hook hook);
+void rt_timer_exit_sethook(timer_hook hook);
+
+timer_hook rt_timer_enter_gethook(void);
+timer_hook rt_timer_exit_gethook(void);
 #endif
 
 /**@}*/
@@ -148,16 +159,21 @@ rt_err_t rt_thread_resume(rt_thread_t thread);
 void rt_thread_timeout(void *parameter);
 
 #ifdef RT_USING_HOOK
-void rt_thread_suspend_sethook(void (*hook)(rt_thread_t thread));
-void rt_thread_resume_sethook (void (*hook)(rt_thread_t thread));
-void rt_thread_inited_sethook (void (*hook)(rt_thread_t thread));
+typedef void (*thread_hook)(rt_thread_t thread);
+void rt_thread_suspend_sethook(thread_hook hook);
+void rt_thread_resume_sethook(thread_hook hook);
+void rt_thread_inited_sethook(thread_hook hook);
+
+thread_hook rt_thread_suspend_gethook(void);
+thread_hook rt_thread_resume_gethook(void);
+thread_hook rt_thread_inited_gethook(void);
 #endif
 
 /*
  * idle thread interface
  */
 void rt_thread_idle_init(void);
-#if defined(RT_USING_HOOK)
+#ifdef RT_USING_HOOK
 rt_err_t rt_thread_idle_sethook(void (*hook)(void));
 rt_err_t rt_thread_idle_delhook(void (*hook)(void));
 #endif
@@ -179,7 +195,10 @@ void rt_exit_critical(void);
 rt_uint16_t rt_critical_level(void);
 
 #ifdef RT_USING_HOOK
-void rt_scheduler_sethook(void (*hook)(rt_thread_t from, rt_thread_t to));
+typedef void (*scheduler_hook)(rt_thread_t from, rt_thread_t to);
+void rt_scheduler_sethook(scheduler_hook hook);
+
+scheduler_hook rt_scheduler_gethook(void);
 #endif
 
 /**@}*/
@@ -214,6 +233,9 @@ void rt_mp_free(void *block);
 #ifdef RT_USING_HOOK
 void rt_mp_alloc_sethook(void (*hook)(struct rt_mempool *mp, void *block));
 void rt_mp_free_sethook(void (*hook)(struct rt_mempool *mp, void *block));
+
+void (*hook)(struct rt_mempool *mp, void *block) rt_mp_alloc_gethook(void);
+void (*hook)(struct rt_mempool *mp, void *block) rt_mp_free_gethook(void);
 #endif
 
 #endif
@@ -243,6 +265,9 @@ void rt_page_free(void *addr, rt_size_t npages);
 #ifdef RT_USING_HOOK
 void rt_malloc_sethook(void (*hook)(void *ptr, rt_size_t size));
 void rt_free_sethook(void (*hook)(void *ptr));
+
+void (*hook)(void *ptr, rt_size_t size) rt_malloc_gethook(void);
+void (*hook)(void *ptr) rt_free_gethook(void);
 #endif
 
 #endif
@@ -433,8 +458,12 @@ void rt_interrupt_leave(void);
 rt_uint8_t rt_interrupt_get_nest(void);
 
 #ifdef RT_USING_HOOK
-void rt_interrupt_enter_sethook(void (*hook)(void));
-void rt_interrupt_leave_sethook(void (*hook)(void));
+typedef void (*interrupt_hook)(void);
+void rt_interrupt_enter_sethook(interrupt_hook hook);
+void rt_interrupt_leave_sethook(interrupt_hook hook);
+
+interrupt_hook rt_interrupt_enter_gethook(void);
+interrupt_hook rt_interrupt_leave_gethook(void);
 #endif
 
 /**

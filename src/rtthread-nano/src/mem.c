@@ -57,8 +57,8 @@
 
 #if defined (RT_USING_HEAP) && defined (RT_USING_SMALL_MEM)
 #ifdef RT_USING_HOOK
-static void (*rt_malloc_hook)(void *ptr, rt_size_t size);
-static void (*rt_free_hook)(void *ptr);
+static void (*rt_malloc_hook)(void *ptr, rt_size_t size) = RT_NULL;
+static void (*rt_free_hook)(void *ptr) = RT_NULL;
 
 /**
  * @addtogroup Hook
@@ -86,6 +86,15 @@ void rt_malloc_sethook(void (*hook)(void *ptr, rt_size_t size))
 void rt_free_sethook(void (*hook)(void *ptr))
 {
     rt_free_hook = hook;
+}
+
+void (*hook)(void *ptr, rt_size_t size) rt_malloc_gethook(void)
+{
+    return rt_malloc_hook;
+}
+void (*hook)(void *ptr) rt_free_gethook(void)
+{
+    return rt_free_hook;
 }
 
 /**@}*/
@@ -396,8 +405,7 @@ void *rt_malloc(rt_size_t size)
                           (rt_ubase_t)((rt_uint8_t *)mem + SIZEOF_STRUCT_MEM),
                           (rt_ubase_t)(mem->next - ((rt_uint8_t *)mem - heap_ptr))));
 
-            RT_OBJECT_HOOK_CALL(rt_malloc_hook,
-                                (((void *)((rt_uint8_t *)mem + SIZEOF_STRUCT_MEM)), size));
+            RT_OBJECT_HOOK_CALL(rt_malloc_hook, (((void *)((rt_uint8_t *)mem + SIZEOF_STRUCT_MEM)), size));
 
             /* return the memory data except mem struct */
             return (rt_uint8_t *)mem + SIZEOF_STRUCT_MEM;
