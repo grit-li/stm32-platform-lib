@@ -172,7 +172,6 @@ static void rt_thread_idle_entry(void *parameter)
 {
     while (1)
     {
-
         rt_size_t i;
 
         for (i = 0; i < RT_IDLE_HOOK_LIST_SIZE; i++)

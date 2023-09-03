@@ -26,6 +26,8 @@ SOURCES += libcpu/arm/cortex-m4/cpuport.c
 
 SOURCES += bsp/board_stm32l475.c
 
+SOURCES += components/cpuusage/cpuusage.c
+
 LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform -I$(TOP)/rtthread-nano/include
 
 include $(TOP)/Makefile.include
