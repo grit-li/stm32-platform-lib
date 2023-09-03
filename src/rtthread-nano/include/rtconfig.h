@@ -9,7 +9,7 @@
 #define RT_NAME_MAX    8
 #define RT_MAIN_THREAD_STACK_SIZE     1024
 
-#define RT_USING_HOOK
+// #define RT_USING_HOOK
 #define RT_USING_TIMER_SOFT
 #define RT_TIMER_THREAD_STACK_SIZE  512
 
@@ -21,6 +21,6 @@
 // #define RT_USING_HEAP
 #define RT_USING_SMALL_MEM
 
-#define RT_DEBUG
+// #define RT_DEBUG
 
 #endif
