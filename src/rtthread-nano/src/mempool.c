@@ -37,7 +37,7 @@ static void (*rt_mp_free_hook)(struct rt_mempool *mp, void *block) = RT_NULL;
  *
  * @param hook the hook function
  */
-void rt_mp_alloc_sethook(void (*hook)(struct rt_mempool *mp, void *block))
+void rt_mp_alloc_sethook(mempool_hook hook)
 {
     rt_mp_alloc_hook = hook;
 }
@@ -48,15 +48,15 @@ void rt_mp_alloc_sethook(void (*hook)(struct rt_mempool *mp, void *block))
  *
  * @param hook the hook function
  */
-void rt_mp_free_sethook(void (*hook)(struct rt_mempool *mp, void *block))
+void rt_mp_free_sethook(mempool_hook hook)
 {
     rt_mp_free_hook = hook;
 }
-void (*hook)(struct rt_mempool *mp, void *block) rt_mp_alloc_gethook(void)
+mempool_hook rt_mp_alloc_gethook(void)
 {
     return rt_mp_alloc_hook;
 }
-void (*hook)(struct rt_mempool *mp, void *block) rt_mp_free_gethook(void)
+mempool_hook rt_mp_free_gethook(void)
 {
     return rt_mp_free_hook;
 }

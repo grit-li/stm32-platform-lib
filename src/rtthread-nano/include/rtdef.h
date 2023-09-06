@@ -52,8 +52,7 @@ extern "C" {
 #define RT_REVISION                     5L              /**< revise version number */
 
 /* RT-Thread version */
-#define RTTHREAD_VERSION                ((RT_VERSION * 10000) + \
-                                         (RT_SUBVERSION * 100) + RT_REVISION)
+#define RTTHREAD_VERSION                ((RT_VERSION * 10000) + (RT_SUBVERSION * 100) + RT_REVISION)
 
 /* RT-Thread basic data type definitions */
 #ifndef RT_USING_ARCH_DATA_TYPE
@@ -64,13 +63,8 @@ typedef unsigned char                   rt_uint8_t;     /**<  8bit unsigned inte
 typedef unsigned short                  rt_uint16_t;    /**< 16bit unsigned integer type */
 typedef unsigned int                    rt_uint32_t;    /**< 32bit unsigned integer type */
 
-#ifdef ARCH_CPU_64BIT
-typedef signed long                     rt_int64_t;     /**< 64bit integer type */
-typedef unsigned long                   rt_uint64_t;    /**< 64bit unsigned integer type */
-#else
 typedef signed long long                rt_int64_t;     /**< 64bit integer type */
 typedef unsigned long long              rt_uint64_t;    /**< 64bit unsigned integer type */
-#endif
 #endif
 
 typedef int                             rt_bool_t;      /**< boolean type */

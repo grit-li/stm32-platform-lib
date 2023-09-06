@@ -50,12 +50,7 @@
 #include <rthw.h>
 #include <rtthread.h>
 
-#ifndef RT_USING_MEMHEAP_AS_HEAP
-
-/* #define RT_MEM_DEBUG */
-#define RT_MEM_STATS
-
-#if defined (RT_USING_HEAP) && defined (RT_USING_SMALL_MEM)
+#if defined (RT_USING_HEAP)
 #ifdef RT_USING_HOOK
 static void (*rt_malloc_hook)(void *ptr, rt_size_t size) = RT_NULL;
 static void (*rt_free_hook)(void *ptr) = RT_NULL;
@@ -72,7 +67,7 @@ static void (*rt_free_hook)(void *ptr) = RT_NULL;
  *
  * @param hook the hook function
  */
-void rt_malloc_sethook(void (*hook)(void *ptr, rt_size_t size))
+void rt_malloc_sethook(malloc_hook hook)
 {
     rt_malloc_hook = hook;
 }
@@ -83,16 +78,16 @@ void rt_malloc_sethook(void (*hook)(void *ptr, rt_size_t size))
  *
  * @param hook the hook function
  */
-void rt_free_sethook(void (*hook)(void *ptr))
+void rt_free_sethook(free_hook hook)
 {
     rt_free_hook = hook;
 }
 
-void (*hook)(void *ptr, rt_size_t size) rt_malloc_gethook(void)
+malloc_hook rt_malloc_gethook(void)
 {
     return rt_malloc_hook;
 }
-void (*hook)(void *ptr) rt_free_gethook(void)
+free_hook rt_free_gethook(void)
 {
     return rt_free_hook;
 }
@@ -107,19 +102,8 @@ struct heap_mem
     /* magic and used flag */
     rt_uint16_t magic;
     rt_uint16_t used;
-#ifdef ARCH_CPU_64BIT
-    rt_uint32_t resv;
-#endif
 
     rt_size_t next, prev;
-
-#ifdef RT_USING_MEMTRACE
-#ifdef ARCH_CPU_64BIT
-    rt_uint8_t thread[8];
-#else
-    rt_uint8_t thread[4];   /* thread name */
-#endif
-#endif
 };
 
 /** pointer to the heap: for alignment, heap_ptr is now a pointer instead of an array */
@@ -128,11 +112,7 @@ static rt_uint8_t *heap_ptr;
 /** the last entry, always unused! */
 static struct heap_mem *heap_end;
 
-#ifdef ARCH_CPU_64BIT
-#define MIN_SIZE 24
-#else
 #define MIN_SIZE 12
-#endif
 
 #define MIN_SIZE_ALIGNED     RT_ALIGN(MIN_SIZE, RT_ALIGN_SIZE)
 #define SIZEOF_STRUCT_MEM    RT_ALIGN(sizeof(struct heap_mem), RT_ALIGN_SIZE)
@@ -141,26 +121,7 @@ static struct heap_mem *lfree;   /* pointer to the lowest free block */
 
 static struct rt_semaphore heap_sem;
 static rt_size_t mem_size_aligned;
-
-#ifdef RT_MEM_STATS
 static rt_size_t used_mem, max_mem;
-#endif
-#ifdef RT_USING_MEMTRACE
-rt_inline void rt_mem_setname(struct heap_mem *mem, const char *name)
-{
-    int index;
-    for (index = 0; index < sizeof(mem->thread); index ++)
-    {
-        if (name[index] == '\0') break;
-        mem->thread[index] = name[index];
-    }
-
-    for (; index < sizeof(mem->thread); index ++)
-    {
-        mem->thread[index] = ' ';
-    }
-}
-#endif
 
 static void plug_holes(struct heap_mem *mem)
 {
@@ -245,9 +206,6 @@ void rt_system_heap_init(void *begin_addr, void *end_addr)
     mem->next  = mem_size_aligned + SIZEOF_STRUCT_MEM;
     mem->prev  = 0;
     mem->used  = 0;
-#ifdef RT_USING_MEMTRACE
-    rt_mem_setname(mem, "INIT");
-#endif
 
     /* initialize the end of the heap */
     heap_end        = (struct heap_mem *)&heap_ptr[mem->next];
@@ -255,9 +213,6 @@ void rt_system_heap_init(void *begin_addr, void *end_addr)
     heap_end->used  = 1;
     heap_end->next  = mem_size_aligned + SIZEOF_STRUCT_MEM;
     heap_end->prev  = mem_size_aligned + SIZEOF_STRUCT_MEM;
-#ifdef RT_USING_MEMTRACE
-    rt_mem_setname(heap_end, "INIT");
-#endif
 
     rt_sem_init(&heap_sem, "heap", 1, RT_IPC_FLAG_FIFO);
 
@@ -343,9 +298,6 @@ void *rt_malloc(rt_size_t size)
                 mem2->used = 0;
                 mem2->next = mem->next;
                 mem2->prev = ptr;
-#ifdef RT_USING_MEMTRACE
-                rt_mem_setname(mem2, "    ");
-#endif
 
                 /* and insert it between mem and mem->next */
                 mem->next = ptr2;
@@ -355,11 +307,9 @@ void *rt_malloc(rt_size_t size)
                 {
                     ((struct heap_mem *)&heap_ptr[mem2->next])->prev = ptr2;
                 }
-#ifdef RT_MEM_STATS
                 used_mem += (size + SIZEOF_STRUCT_MEM);
                 if (max_mem < used_mem)
                     max_mem = used_mem;
-#endif
             }
             else
             {
@@ -371,20 +321,12 @@ void *rt_malloc(rt_size_t size)
                  * will always be used at this point!
                  */
                 mem->used = 1;
-#ifdef RT_MEM_STATS
                 used_mem += mem->next - ((rt_uint8_t *)mem - heap_ptr);
                 if (max_mem < used_mem)
                     max_mem = used_mem;
-#endif
             }
             /* set memory block magic */
             mem->magic = HEAP_MAGIC;
-#ifdef RT_USING_MEMTRACE
-            if (rt_thread_self())
-                rt_mem_setname(mem, rt_thread_self()->name);
-            else
-                rt_mem_setname(mem, "NONE");
-#endif
 
             if (mem == lfree)
             {
@@ -478,9 +420,7 @@ void *rt_realloc(void *rmem, rt_size_t newsize)
     if (newsize + SIZEOF_STRUCT_MEM + MIN_SIZE < size)
     {
         /* split memory block */
-#ifdef RT_MEM_STATS
         used_mem -= (size - newsize);
-#endif
 
         ptr2 = ptr + SIZEOF_STRUCT_MEM + newsize;
         mem2 = (struct heap_mem *)&heap_ptr[ptr2];
@@ -488,9 +428,6 @@ void *rt_realloc(void *rmem, rt_size_t newsize)
         mem2->used = 0;
         mem2->next = mem->next;
         mem2->prev = ptr;
-#ifdef RT_USING_MEMTRACE
-        rt_mem_setname(mem2, "    ");
-#endif
         mem->next = ptr2;
         if (mem2->next != mem_size_aligned + SIZEOF_STRUCT_MEM)
         {
@@ -600,9 +537,6 @@ void rt_free(void *rmem)
     /* ... and is now unused. */
     mem->used  = 0;
     mem->magic = HEAP_MAGIC;
-#ifdef RT_USING_MEMTRACE
-    rt_mem_setname(mem, "    ");
-#endif
 
     if (mem < lfree)
     {
@@ -610,16 +544,13 @@ void rt_free(void *rmem)
         lfree = mem;
     }
 
-#ifdef RT_MEM_STATS
     used_mem -= (mem->next - ((rt_uint8_t *)mem - heap_ptr));
-#endif
 
     /* finally, see if prev or next are free also */
     plug_holes(mem);
     rt_sem_release(&heap_sem);
 }
 
-#ifdef RT_MEM_STATS
 void rt_memory_info(rt_uint32_t *total,
                     rt_uint32_t *used,
                     rt_uint32_t *max_used)
@@ -632,9 +563,6 @@ void rt_memory_info(rt_uint32_t *total,
         *max_used = max_mem;
 }
 
-#endif
-
 /**@}*/
 
 #endif /* end of RT_USING_HEAP */
-#endif /* end of RT_USING_MEMHEAP_AS_HEAP */

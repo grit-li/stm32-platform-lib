@@ -4,7 +4,6 @@ TARGET := librtthread-nano
 
 SOURCES += src/clock.c
 SOURCES += src/components.c
-SOURCES += src/cpu.c
 SOURCES += src/idle.c
 SOURCES += src/ipc.c
 SOURCES += src/irq.c
@@ -14,7 +13,6 @@ SOURCES += src/memheap.c
 SOURCES += src/mempool.c
 SOURCES += src/object.c
 SOURCES += src/scheduler.c
-SOURCES += src/slab.c
 SOURCES += src/thread.c
 SOURCES += src/timer.c
 

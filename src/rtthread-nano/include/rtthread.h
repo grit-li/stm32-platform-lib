@@ -229,11 +229,12 @@ void *rt_mp_alloc(rt_mp_t mp, rt_int32_t time);
 void rt_mp_free(void *block);
 
 #ifdef RT_USING_HOOK
-void rt_mp_alloc_sethook(void (*hook)(struct rt_mempool *mp, void *block));
-void rt_mp_free_sethook(void (*hook)(struct rt_mempool *mp, void *block));
+typedef void (*mempool_hook)(struct rt_mempool *mp, void *block);
+void rt_mp_alloc_sethook(mempool_hook hook);
+void rt_mp_free_sethook(mempool_hook hook);
 
-void (*hook)(struct rt_mempool *mp, void *block) rt_mp_alloc_gethook(void);
-void (*hook)(struct rt_mempool *mp, void *block) rt_mp_free_gethook(void);
+mempool_hook rt_mp_alloc_gethook(void);
+mempool_hook rt_mp_free_gethook(void);
 #endif
 
 #endif
@@ -255,17 +256,15 @@ void rt_memory_info(rt_uint32_t *total,
                     rt_uint32_t *used,
                     rt_uint32_t *max_used);
 
-#ifdef RT_USING_SLAB
-void *rt_page_alloc(rt_size_t npages);
-void rt_page_free(void *addr, rt_size_t npages);
-#endif
 
 #ifdef RT_USING_HOOK
-void rt_malloc_sethook(void (*hook)(void *ptr, rt_size_t size));
-void rt_free_sethook(void (*hook)(void *ptr));
+typedef void (*malloc_hook)(void *ptr, rt_size_t size);
+typedef void (*free_hook)(void *ptr);
+void rt_malloc_sethook(malloc_hook hook);
+void rt_free_sethook(free_hook hook);
 
-void (*hook)(void *ptr, rt_size_t size) rt_malloc_gethook(void);
-void (*hook)(void *ptr) rt_free_gethook(void);
+malloc_hook rt_malloc_gethook(void);
+free_hook rt_free_gethook(void);
 #endif
 
 #endif
