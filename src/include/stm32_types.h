@@ -3,8 +3,8 @@
 
 enum stm32_bool_e
 {
-    stm32_flase,
-    stm32_true = !stm32_flase,
+    stm32_false,
+    stm32_true = !stm32_false,
 };
 
 enum stm32_enable_e

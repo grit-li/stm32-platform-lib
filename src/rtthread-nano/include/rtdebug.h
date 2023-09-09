@@ -23,16 +23,8 @@
 #define RT_DEBUG_MEMHEAP               0
 #endif
 
-#ifndef RT_DEBUG_MODULE
-#define RT_DEBUG_MODULE                0
-#endif
-
 #ifndef RT_DEBUG_SCHEDULER
 #define RT_DEBUG_SCHEDULER             0
-#endif
-
-#ifndef RT_DEBUG_SLAB
-#define RT_DEBUG_SLAB                  0
 #endif
 
 #ifndef RT_DEBUG_THREAD
@@ -49,10 +41,6 @@
 
 #ifndef RT_DEBUG_IPC
 #define RT_DEBUG_IPC                   0
-#endif
-
-#ifndef RT_DEBUG_INIT
-#define RT_DEBUG_INIT                  0
 #endif
 
 /* Turn on this to enable context check */

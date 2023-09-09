@@ -31,6 +31,9 @@ SOURCES += components/finsh/msh.c
 SOURCES += components/finsh/msh_parse.c
 SOURCES += components/finsh/shell.c
 
+SOURCES += components/syslogd/datacache.c
+SOURCES += components/syslogd/syslogd.c
+
 LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform -I$(TOP)/rtthread-nano/include
 
 include $(TOP)/Makefile.include

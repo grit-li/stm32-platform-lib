@@ -67,7 +67,6 @@ static void get_cpu_use_thread_entry(void* parameter)
     while(1)
     {
         cpu_usage_get(&major, &minor);
-        printf("CPU usage = %d.%d%%\n", major, minor);
         rt_thread_mdelay(1000);
     }
 }
