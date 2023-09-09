@@ -1,9 +1,13 @@
+#include <stdio.h>
 #include <rtthread.h>
 #include <rthw.h>
 #include "cpuusage.h"
 
 #define CPU_USAGE_CALC_TICK    1000
 #define CPU_USAGE_LOOP        100
+
+static ALIGN(8) rt_uint8_t cpu_use_stack[1024];
+static struct rt_thread get_cpu_use_thread;
 
 static rt_uint8_t cpu_usage_major = 0, cpu_usage_minor= 0;
 static rt_uint32_t total_count = 0;
@@ -55,7 +59,23 @@ void cpu_usage_get(rt_uint8_t *major, rt_uint8_t *minor)
     *minor = cpu_usage_minor;
 }
 
-void cpu_usage_init(void)
+static void get_cpu_use_thread_entry(void* parameter)
 {
+    rt_uint8_t major = 0;
+    rt_uint8_t minor = 0;
     rt_thread_idle_sethook(cpu_usage_idle_hook);
+    while(1)
+    {
+        cpu_usage_get(&major, &minor);
+        printf("CPU usage = %d.%d%%\n", major, minor);
+        rt_thread_mdelay(1000);
+    }
 }
+
+int cpu_usage_init(void)
+{
+    rt_thread_init(&get_cpu_use_thread, "get cpu usage", get_cpu_use_thread_entry, RT_NULL, cpu_use_stack, sizeof(cpu_use_stack), 5, 20);
+    rt_thread_startup(&get_cpu_use_thread);
+    return 0;
+}
+INIT_APP_EXPORT(cpu_usage_init);

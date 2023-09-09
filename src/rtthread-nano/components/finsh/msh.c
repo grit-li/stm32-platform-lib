@@ -287,6 +287,4 @@ void msh_auto_complete(char *prefix)
     {
         rt_strncpy(prefix, name_ptr, min_length);
     }
-
-    return ;
 }
