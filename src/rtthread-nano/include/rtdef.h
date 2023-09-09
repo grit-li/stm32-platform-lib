@@ -108,6 +108,23 @@ typedef rt_base_t                       rt_off_t;       /**< Type for offset */
 #define RT_WEAK                     __attribute__((weak))
 #define rt_inline                   static __inline
 
+typedef int (*init_fn_t)(void);
+#define INIT_EXPORT(fn, level)                                                       \
+    RT_USED const init_fn_t __rt_init_##fn SECTION(".rti_fn." level) = fn
+
+#define INIT_BOARD_EXPORT(fn)           INIT_EXPORT(fn, "1")
+/* pre/device/component/env/app init routines will be called in init_thread */
+/* components pre-initialization (pure software initialization) */
+#define INIT_PREV_EXPORT(fn)            INIT_EXPORT(fn, "2")
+/* device initialization */
+#define INIT_DEVICE_EXPORT(fn)          INIT_EXPORT(fn, "3")
+/* components initialization (dfs, lwip, ...) */
+#define INIT_COMPONENT_EXPORT(fn)       INIT_EXPORT(fn, "4")
+/* environment initialization (mount disk, ...) */
+#define INIT_ENV_EXPORT(fn)             INIT_EXPORT(fn, "5")
+/* application initialization (rtgui application etc ...) */
+#define INIT_APP_EXPORT(fn)             INIT_EXPORT(fn, "6")
+
 /* event length */
 #define RT_EVENT_LENGTH                 32
 

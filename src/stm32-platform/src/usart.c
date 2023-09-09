@@ -22,7 +22,17 @@ uint32_t usart_deinit(enum usart_type_e type)
     return stm32_errcode_success;
 }
 
-uint32_t usart_send_data(enum usart_type_e type, const uint8_t* data, uint32_t length)
+uint32_t usart_transport_data(enum usart_type_e type, const uint8_t* data, uint32_t length)
 {
-    return hal_usart_send_data(type, data, length);;
+    return hal_usart_transport_data(type, data, length);
+}
+
+uint32_t usart_receive_data(enum usart_type_e type, uint8_t* data, uint32_t length)
+{
+    return hal_usart_receive_data(type, data, length);
+}
+
+uint8_t usart_receive_buffer(enum usart_type_e type)
+{
+    return hal_usart_receive_buffer(type);
 }

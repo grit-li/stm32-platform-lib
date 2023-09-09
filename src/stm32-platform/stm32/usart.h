@@ -85,7 +85,9 @@ static inline void usart_struct_init(struct usart_init_t* init, enum usart_type_
 uint32_t usart_init(const struct usart_init_t *);
 uint32_t usart_deinit(enum usart_type_e);
 
-uint32_t usart_send_data(enum usart_type_e, const uint8_t *, uint32_t);
+uint32_t usart_transport_data(enum usart_type_e, const uint8_t *, uint32_t);
+uint32_t usart_receive_data(enum usart_type_e, uint8_t *, uint32_t);
+uint8_t usart_receive_buffer(enum usart_type_e);
 
 #ifdef __cplusplus
 }

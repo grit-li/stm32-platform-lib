@@ -7,7 +7,7 @@
 #define RT_TICK_PER_SECOND  1000
 #define RT_ALIGN_SIZE   4
 #define RT_NAME_MAX    8
-#define RT_MAIN_THREAD_STACK_SIZE     1024
+#define RT_MAIN_THREAD_STACK_SIZE     2048
 
 #define RT_USING_HOOK
 #define RT_USING_TIMER_SOFT
@@ -19,10 +19,12 @@
 #define RT_USING_MAILBOX
 #define RT_USING_MESSAGEQUEUE
 
-#define RT_USING_HEAP
-#define RT_USING_MEMPOOL
-#define RT_USING_MEMHEAP
+// #define RT_USING_HEAP
+// #define RT_USING_MEMPOOL
+// #define RT_USING_MEMHEAP
 
-// #define RT_DEBUG
+#define RT_CONSOLEBUF_SIZE 128
+
+#define RT_DEBUG
 
 #endif

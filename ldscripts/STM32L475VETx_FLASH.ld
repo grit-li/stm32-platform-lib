@@ -27,6 +27,24 @@ SECTIONS
         . = ALIGN(8);
     } >FLASH
 
+    .msh :
+    {
+        . = ALIGN(8);
+        __fsymtab_start = .;
+        KEEP(*(FSymTab))
+        __fsymtab_end = .;
+        . = ALIGN(8);
+
+    } >FLASH
+    .components :
+    {
+        . = ALIGN(8);
+        __rt_init_start = .;
+        KEEP(*(SORT(.rti_fn*)))
+        __rt_init_end = .;
+        . = ALIGN(8);
+    } >FLASH
+
     .rodata :
     {
         . = ALIGN(8);

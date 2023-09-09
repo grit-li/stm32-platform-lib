@@ -26,6 +26,11 @@ SOURCES += bsp/board_stm32l475.c
 
 SOURCES += components/cpuusage/cpuusage.c
 
+SOURCES += components/finsh/cmd.c
+SOURCES += components/finsh/msh.c
+SOURCES += components/finsh/msh_parse.c
+SOURCES += components/finsh/shell.c
+
 LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform -I$(TOP)/rtthread-nano/include
 
 include $(TOP)/Makefile.include

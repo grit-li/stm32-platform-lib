@@ -36,11 +36,24 @@ static rt_uint8_t main_stack[RT_MAIN_THREAD_STACK_SIZE];
 struct rt_thread main_thread;
 #endif
 
+static void rt_components_init(void)
+{
+    extern unsigned int __rt_init_start;
+    extern unsigned int __rt_init_end;
+
+    volatile const init_fn_t *fn_ptr;
+    for (fn_ptr = (const init_fn_t *)&__rt_init_start; fn_ptr < (const init_fn_t *)&__rt_init_end; fn_ptr++)
+    {
+        (*fn_ptr)();
+    }
+}
+
 /* the system main thread */
 static void main_thread_entry(void *parameter)
 {
     extern int main(void);
     /* invoke system main function */
+    rt_components_init();
     main();
 }
 

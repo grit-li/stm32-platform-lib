@@ -155,7 +155,7 @@ uint32_t hal_usart_set_flow_control(enum usart_type_e type, enum usart_flow_cont
     return stm32_errcode_success;  
 }
 
-uint32_t hal_usart_send_data(enum usart_type_e type, const uint8_t* data, uint32_t length)
+uint32_t hal_usart_transport_data(enum usart_type_e type, const uint8_t* data, uint32_t length)
 {
     struct USART_TypeDef* USARTx = hal_usart_get_register(type);
 
@@ -167,6 +167,29 @@ uint32_t hal_usart_send_data(enum usart_type_e type, const uint8_t* data, uint32
         hw_usart_transmit_data(USARTx, data[i]);
     }
     return stm32_errcode_success;  
+}
+uint32_t hal_usart_receive_data(enum usart_type_e type, uint8_t* data, uint32_t length)
+{
+    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
+
+    if(!USARTx) {
+        return stm32_errcode_param_error;
+    }
+    for(uint32_t i = 0; i < length; i++) {
+        while(hw_usart_read_data_register_not_empty_flag(USARTx) != USART_ISR_RXNE);
+        data[i] = hw_usart_receive_data(USARTx);
+    }
+
+    return stm32_errcode_success;
+}
+
+uint8_t hal_usart_receive_buffer(enum usart_type_e type)
+{
+    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
+    if(!USARTx) {
+        return 0;
+    }
+    return (hw_usart_read_data_register_not_empty_flag(USARTx) != USART_ISR_RXNE) ? -1 : hw_usart_receive_data(USARTx);
 }
 
 uint32_t hal_usart_set_enable(enum usart_type_e type)

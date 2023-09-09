@@ -22,8 +22,6 @@
 #include <rtthread.h>
 #include <rthw.h>
 
-#define RT_CONSOLEBUF_SIZE          128
-
 /**
  * @addtogroup KernelService
  */
@@ -967,9 +965,10 @@ rt_device_t rt_console_set_device(const char *name)
 }
 #endif
 
-RT_WEAK void rt_hw_console_output(const char *str)
+void rt_hw_console_output(const char *str)
 {
-    printf("%s", str);
+    extern void rt_hw_console_writedata(const uint8_t*, uint32_t);
+    rt_hw_console_writedata((const uint8_t *)str, rt_strlen(str));
 }
 
 /**
@@ -1153,7 +1152,7 @@ int __rt_ffs(int value)
 #ifdef RT_DEBUG
 /* RT_ASSERT(EX)'s hook */
 
-void (*rt_assert_hook)(const char *ex, const char *func, rt_size_t line);
+static void (*rt_assert_hook)(const char *ex, const char *func, rt_size_t line) = RT_NULL;
 
 /**
  * This function will set a hook function to RT_ASSERT(EX). It will run when the expression is false.
