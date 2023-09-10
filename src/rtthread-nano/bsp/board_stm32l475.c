@@ -54,7 +54,7 @@ char rt_hw_console_getchar(void)
     if(g_rt_console_init_flag) {
         return usart_receive_buffer(usart_type_1);
     }
-    return 0x00;
+    return -1;
 }
 
 void rt_hw_board_init(void)

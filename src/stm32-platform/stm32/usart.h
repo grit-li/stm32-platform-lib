@@ -87,7 +87,7 @@ uint32_t usart_deinit(enum usart_type_e);
 
 uint32_t usart_transport_data(enum usart_type_e, const uint8_t *, uint32_t);
 uint32_t usart_receive_data(enum usart_type_e, uint8_t *, uint32_t);
-uint8_t usart_receive_buffer(enum usart_type_e);
+int32_t usart_receive_buffer(enum usart_type_e);
 
 #ifdef __cplusplus
 }

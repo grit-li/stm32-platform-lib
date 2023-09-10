@@ -183,13 +183,20 @@ uint32_t hal_usart_receive_data(enum usart_type_e type, uint8_t* data, uint32_t 
     return stm32_errcode_success;
 }
 
-uint8_t hal_usart_receive_buffer(enum usart_type_e type)
+int32_t hal_usart_receive_buffer(enum usart_type_e type)
 {
     struct USART_TypeDef* USARTx = hal_usart_get_register(type);
+    int32_t bRet = -1;
     if(!USARTx) {
-        return 0;
+        return stm32_errcode_param_error;
     }
-    return (hw_usart_read_data_register_not_empty_flag(USARTx) != USART_ISR_RXNE) ? -1 : hw_usart_receive_data(USARTx);
+    if(hw_usart_read_data_register_not_empty_flag(USARTx) == USART_ISR_RXNE) {
+        bRet = hw_usart_receive_data(USARTx);
+    }
+    if(hw_usart_overrun_error_flag(USARTx)) {
+        hw_usart_clear_overrun_error_flag(USARTx);
+    }
+    return bRet;
 }
 
 uint32_t hal_usart_set_enable(enum usart_type_e type)

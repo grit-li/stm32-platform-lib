@@ -32,7 +32,7 @@ uint32_t usart_receive_data(enum usart_type_e type, uint8_t* data, uint32_t leng
     return hal_usart_receive_data(type, data, length);
 }
 
-uint8_t usart_receive_buffer(enum usart_type_e type)
+int32_t usart_receive_buffer(enum usart_type_e type)
 {
     return hal_usart_receive_buffer(type);
 }
