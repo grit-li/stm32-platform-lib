@@ -394,7 +394,6 @@ rt_err_t rt_mq_control(rt_mq_t mq, int cmd, void *arg);
 
 /**@}*/
 
-#ifdef RT_USING_DEVICE
 /**
  * @addtogroup Device
  */
@@ -435,9 +434,6 @@ rt_size_t rt_device_write(rt_device_t dev,
                           const void *buffer,
                           rt_size_t   size);
 rt_err_t  rt_device_control(rt_device_t dev, int cmd, void *arg);
-
-/**@}*/
-#endif
 
 /*
  * interrupt service

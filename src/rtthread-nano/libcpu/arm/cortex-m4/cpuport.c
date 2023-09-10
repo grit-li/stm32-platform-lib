@@ -365,7 +365,6 @@ struct exception_info
 
 void rt_hw_hard_fault_exception(struct exception_info *exception_info)
 {
-    extern long list_thread(void);
     struct exception_stack_frame *exception_stack = &exception_info->stack_frame.exception_stack_frame;
     struct stack_frame *context = &exception_info->stack_frame;
 

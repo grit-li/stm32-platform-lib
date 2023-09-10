@@ -780,7 +780,6 @@ long list_timer(void)
     return 0;
 }
 
-#ifdef RT_USING_DEVICE
 static char *const device_type_str[RT_Device_Class_Unknown] =
 {
     "Character Device",
@@ -794,7 +793,6 @@ static char *const device_type_str[RT_Device_Class_Unknown] =
     "I2C Bus",
     "USB Slave Device",
     "USB Host Bus",
-    "USB OTG Bus",
     "SPI Bus",
     "SPI Device",
     "SDIO Bus",
@@ -804,15 +802,6 @@ static char *const device_type_str[RT_Device_Class_Unknown] =
     "Timer Device",
     "Miscellaneous Device",
     "Sensor Device",
-    "Touch Device",
-    "Phy Device",
-    "Security Device",
-    "WLAN Device",
-    "Pin Device",
-    "ADC Device",
-    "DAC Device",
-    "WDT Device",
-    "PWM Device",
 };
 
 long list_device(void)
@@ -873,7 +862,6 @@ long list_device(void)
 
     return 0;
 }
-#endif /* RT_USING_DEVICE */
 
 int cmd_list(int argc, char **argv)
 {
@@ -929,12 +917,10 @@ int cmd_list(int argc, char **argv)
             list_mempool();
         }
 #endif /* RT_USING_MEMPOOL */
-#ifdef RT_USING_DEVICE
         else if(strcmp(argv[1], "device") == 0)
         {
             list_device();
         }
-#endif /* RT_USING_DEVICE */
 #ifdef RT_USING_DFS
         else if(strcmp(argv[1], "fd") == 0)
         {
@@ -976,9 +962,7 @@ _usage:
 #ifdef RT_USING_MEMPOOL
     rt_kprintf("    %-12s - list memory pools\n", "mempool");
 #endif /* RT_USING_MEMPOOL */
-#ifdef RT_USING_DEVICE
     rt_kprintf("    %-12s - list devices\n", "device");
-#endif /* RT_USING_DEVICE */
 #ifdef RT_USING_DFS
     rt_kprintf("    %-12s - list file descriptors\n", "fd");
 #endif /* RT_USING_DFS */

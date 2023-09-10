@@ -45,9 +45,7 @@ enum rt_object_info_type
 #ifdef RT_USING_MEMPOOL
     RT_Object_Info_MemPool,                            /**< The object is a memory pool. */
 #endif
-#ifdef RT_USING_DEVICE
     RT_Object_Info_Device,                             /**< The object is a device */
-#endif
     RT_Object_Info_Timer,                              /**< The object is a timer. */
     RT_Object_Info_Unknown,                            /**< The object is unknown. */
 };
@@ -86,10 +84,8 @@ static struct rt_object_information rt_object_container[RT_Object_Info_Unknown] 
     /* initialize object container - memory pool */
     {RT_Object_Class_MemPool, _OBJ_CONTAINER_LIST_INIT(RT_Object_Info_MemPool), sizeof(struct rt_mempool)},
 #endif
-#ifdef RT_USING_DEVICE
     /* initialize object container - device */
     {RT_Object_Class_Device, _OBJ_CONTAINER_LIST_INIT(RT_Object_Info_Device), sizeof(struct rt_device)},
-#endif
     /* initialize object container - timer */
     {RT_Object_Class_Timer, _OBJ_CONTAINER_LIST_INIT(RT_Object_Info_Timer), sizeof(struct rt_timer)},
 };

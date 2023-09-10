@@ -20,8 +20,8 @@ static void irq_systick_handler(void)
 }
 
 #if defined(RT_USING_HEAP)
-#define RT_HEAP_SIZE 1024 * 4
-static uint8_t rt_heap[RT_HEAP_SIZE];  // heap default size: 4K(1024 * 4)
+#define RT_HEAP_SIZE 1024 * 10
+static uint8_t rt_heap[RT_HEAP_SIZE];
 void *rt_heap_begin_get(void)
 {
     return rt_heap;

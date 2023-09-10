@@ -15,6 +15,7 @@ SOURCES += src/object.c
 SOURCES += src/scheduler.c
 SOURCES += src/thread.c
 SOURCES += src/timer.c
+SOURCES += src/device.c
 
 SOURCES += libcpu/arm/common/backtrace.c
 SOURCES += libcpu/arm/common/showmem.c
@@ -27,13 +28,21 @@ SOURCES += bsp/board_stm32l475.c
 SOURCES += components/cpuusage/cpuusage.c
 
 SOURCES += components/finsh/cmd.c
+SOURCES += components/finsh/shell.c
 SOURCES += components/finsh/msh.c
 SOURCES += components/finsh/msh_parse.c
-SOURCES += components/finsh/shell.c
 
 SOURCES += components/syslogd/datacache.c
 SOURCES += components/syslogd/syslogd.c
 
+SOURCES += components/dfs/filesystems/devfs/devfs.c
+SOURCES += components/dfs/src/dfs_file.c
+SOURCES += components/dfs/src/dfs_posix.c
+SOURCES += components/dfs/src/dfs.c
+SOURCES += components/dfs/src/dfs_fs.c
+SOURCES += components/dfs/src/msh_cmd.c
+
 LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform -I$(TOP)/rtthread-nano/include
+LOCAL_CFLAGS += -I$(TOP)/rtthread-nano/components/dfs/include
 
 include $(TOP)/Makefile.include

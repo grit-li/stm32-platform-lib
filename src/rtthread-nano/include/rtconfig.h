@@ -19,12 +19,14 @@
 #define RT_USING_MAILBOX
 #define RT_USING_MESSAGEQUEUE
 
-// #define RT_USING_HEAP
-// #define RT_USING_MEMPOOL
-// #define RT_USING_MEMHEAP
+#define RT_USING_HEAP
+#define RT_USING_MEMPOOL
+#define RT_USING_MEMHEAP
 
 #define RT_CONSOLEBUF_SIZE 128
 
 #define RT_DEBUG
+
+#define DFS_USING_WORKDIR
 
 #endif

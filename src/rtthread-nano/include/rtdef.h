@@ -164,6 +164,14 @@ typedef int (*init_fn_t)(void);
 #define RT_EIO                          8               /**< IO error */
 #define RT_EINTR                        9               /**< Interrupted system call */
 #define RT_EINVAL                       10              /**< Invalid argument */
+#define RT_ENOENT                       11
+#define RT_ENXIO                        12
+#define RT_EXDEV                        13
+#define RT_EBADF                        14
+#define RT_EEXIST                       15
+#define RT_ENOSPC                       16
+#define RT_ENOTDIR                      17
+#define RT_ENODEV                       18
 
 /**@}*/
 
@@ -623,7 +631,6 @@ typedef struct rt_mempool *rt_mp_t;
 
 /**@}*/
 
-#ifdef RT_USING_DEVICE
 /**
  * @addtogroup Device
  */
@@ -655,9 +662,9 @@ enum rt_device_class_type
     RT_Device_Class_Timer,                              /**< Timer device */
     RT_Device_Class_Miscellaneous,                      /**< Miscellaneous device */
     RT_Device_Class_Sensor,                             /**< Sensor device */
-    RT_Device_Class_Touch,                              /**< Touch device */
     RT_Device_Class_Unknown                             /**< unknown device */
 };
+
 
 /**
  * device flags defitions
@@ -735,9 +742,6 @@ struct rt_device
 
     void                     *user_data;                /**< device private data */
 };
-
-/**@}*/
-#endif
 
 #ifdef __cplusplus
 }
