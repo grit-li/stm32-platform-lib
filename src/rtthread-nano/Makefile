@@ -23,6 +23,7 @@ SOURCES += libcpu/arm/common/showmem.c
 SOURCES += libcpu/arm/cortex-m4/context_gcc.s
 SOURCES += libcpu/arm/cortex-m4/cpuport.c
 
+SOURCES += bsp/drv_gpio.c
 SOURCES += bsp/board_stm32l475.c
 
 SOURCES += components/cpuusage/cpuusage.c
@@ -42,7 +43,11 @@ SOURCES += components/dfs/src/dfs.c
 SOURCES += components/dfs/src/dfs_fs.c
 SOURCES += components/dfs/src/msh_cmd.c
 
+SOURCES += components/drivers/misc/pin.c
+
 LOCAL_CFLAGS += -I$(TOP)/include -I$(TOP)/stm32-platform -I$(TOP)/rtthread-nano/include
 LOCAL_CFLAGS += -I$(TOP)/rtthread-nano/components/dfs/include
+LOCAL_CFLAGS += -I$(TOP)/rtthread-nano/components/drivers/include
+LOCAL_CFLAGS += -I$(TOP)/rtthread-nano/components/finsh
 
 include $(TOP)/Makefile.include

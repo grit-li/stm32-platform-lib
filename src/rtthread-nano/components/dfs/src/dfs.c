@@ -526,6 +526,4 @@ int list_fd(void)
 
     return 0;
 }
-MSH_CMD_EXPORT(list_fd, list file descriptor);
-/*@}*/
 

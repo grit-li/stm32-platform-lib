@@ -45,7 +45,7 @@ static long clear(void)
     rt_kprintf("\x1b[2J\x1b[H");
     return 0;
 }
-MSH_CMD_EXPORT(clear, clear the terminal screen);
+MSH_CMD_EXPORT(clear, "clear the terminal screen");
 
 extern void rt_show_version(void);
 long version(void)
@@ -53,7 +53,7 @@ long version(void)
     rt_show_version();
     return 0;
 }
-MSH_CMD_EXPORT(version, show RT-Thread version information);
+MSH_CMD_EXPORT(version, "show RT-Thread version information");
 
 rt_inline void object_split(int len)
 {
@@ -969,4 +969,4 @@ _usage:
 
     return 0;
 }
-MSH_CMD_EXPORT_ALIAS(cmd_list, list, list objects);
+MSH_CMD_EXPORT_ALIAS(cmd_list, "list", "list objects");

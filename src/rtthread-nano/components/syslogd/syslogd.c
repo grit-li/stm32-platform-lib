@@ -48,4 +48,4 @@ static long logread(void)
     }
     return 0;
 }
-MSH_CMD_EXPORT(logread, output debug info);
+MSH_CMD_EXPORT(logread, "output debug info");

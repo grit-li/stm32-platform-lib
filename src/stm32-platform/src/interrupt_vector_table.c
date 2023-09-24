@@ -77,12 +77,12 @@ void nmi_handler(void)
 {
 
 }
-void hard_fault_handler(void)
-{
-    while(1) {
+// void hard_fault_handler(void)
+// {
+//     while(1) {
 
-    }
-}
+//     }
+// }
 void mem_manage_handler(void)
 {
     while(1) {

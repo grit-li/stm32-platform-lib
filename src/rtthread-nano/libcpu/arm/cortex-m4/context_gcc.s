@@ -213,9 +213,9 @@ rt_hw_interrupt_thread_switch:
     BX  lr
     NOP
 
-.global HardFault_Handler
-.type HardFault_Handler, %function
-HardFault_Handler:
+.global hard_fault_handler
+.type hard_fault_handler, %function
+hard_fault_handler:
     /* get current context */
     MRS     r0, msp                 /* get fault context from handler. */
     TST     lr, #0x04               /* if(!EXC_RETURN[2]) */

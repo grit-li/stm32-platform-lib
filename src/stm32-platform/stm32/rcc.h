@@ -33,6 +33,33 @@ enum rcc_clock_tree_e
 
     rcc_clock_sysclk,
 
+    rcc_clock_hclk,
+
+    rcc_clock_powerclk,
+    rcc_clock_ahbclk,
+    rcc_clock_coreclk,
+    rcc_clock_memoryclk,
+    rcc_clock_dmaclk,
+    rcc_clock_systickclk,
+    rcc_clock_fclk,
+
+    rcc_clock_apb1clk,
+    rcc_clock_apb2clk,
+
+    rcc_clock_apb1timerclk,
+    rcc_clock_apb2timerclk,
+
+    rcc_clock_rtcclk,
+    rcc_clock_usart1clk,
+    rcc_clock_usart2clk,
+    rcc_clock_usart3clk,
+    rcc_clock_usart4clk,
+    rcc_clock_usart5clk,
+    rcc_clock_lpusart1clk,
+
+    rcc_clock_lptim1clk,
+    rcc_clock_lptim2clk,
+
     rcc_clock_tree_max
 };
 
@@ -234,25 +261,25 @@ enum rcc_lsco_clock_source_e
 
 enum rcc_clock_prescaler_e
 {
-    rcc_clock_prescaler_1,
-    rcc_clock_prescaler_2,
-    rcc_clock_prescaler_3,
-    rcc_clock_prescaler_4,
-    rcc_clock_prescaler_5,
-    rcc_clock_prescaler_6,
-    rcc_clock_prescaler_7,
-    rcc_clock_prescaler_8,
-    rcc_clock_prescaler_16,
-    rcc_clock_prescaler_64,
-    rcc_clock_prescaler_128,
-    rcc_clock_prescaler_256,
-    rcc_clock_prescaler_512,
+    rcc_clock_prescaler_1 = 1,
+    rcc_clock_prescaler_2 = 2,
+    rcc_clock_prescaler_3 = 3,
+    rcc_clock_prescaler_4 = 4,
+    rcc_clock_prescaler_5 = 5,
+    rcc_clock_prescaler_6 = 6,
+    rcc_clock_prescaler_7 = 7,
+    rcc_clock_prescaler_8 = 8,
+    rcc_clock_prescaler_16 = 16,
+    rcc_clock_prescaler_64 = 64,
+    rcc_clock_prescaler_128 = 128,
+    rcc_clock_prescaler_256 = 256,
+    rcc_clock_prescaler_512 = 512,
 };
 
 enum rcc_peripheral_clock_enable_e
 {
     rcc_peripheral_clock_disable = 0,
-    rcc_peripheral_clock_enable = 1,
+    rcc_peripheral_clock_enable  = 1,
 };
 
 struct rcc_clock_enable_t
@@ -264,7 +291,28 @@ struct rcc_clock_enable_t
     enum rcc_peripheral_clock_enable_e IOPEEN;
     enum rcc_peripheral_clock_enable_e IOPFEN;
     enum rcc_peripheral_clock_enable_e IOPGEN;
+    enum rcc_peripheral_clock_enable_e RTCEN;
     enum rcc_peripheral_clock_enable_e USART1EN;
+    enum rcc_peripheral_clock_enable_e USART2EN;
+    enum rcc_peripheral_clock_enable_e USART3EN;
+    enum rcc_peripheral_clock_enable_e USART4EN;
+    enum rcc_peripheral_clock_enable_e USART5EN;
+    enum rcc_peripheral_clock_enable_e LPUSART1EN;
+    enum rcc_peripheral_clock_enable_e LPTIM1EN;
+    enum rcc_peripheral_clock_enable_e LPTIM2EN;
+    enum rcc_peripheral_clock_enable_e SWPMI1EN;
+    enum rcc_peripheral_clock_enable_e MCOEN;
+    enum rcc_peripheral_clock_enable_e LSCOEN;
+
+    enum rcc_peripheral_clock_enable_e CLK48EN;
+    enum rcc_peripheral_clock_enable_e I2C1EN;
+    enum rcc_peripheral_clock_enable_e I2C2EN;
+    enum rcc_peripheral_clock_enable_e I2C3EN;
+    enum rcc_peripheral_clock_enable_e ADCEN;
+    enum rcc_peripheral_clock_enable_e SAI1EN;
+    enum rcc_peripheral_clock_enable_e SAI2EN;
+    enum rcc_peripheral_clock_enable_e DFSDM1EN;
+
 };
 
 struct rcc_clock_scale_t
@@ -296,7 +344,8 @@ struct rcc_clock_scale_t
     enum rcc_usart_clock_source_e usart4_source;
     enum rcc_usart_clock_source_e usart5_source;
     enum rcc_usart_clock_source_e lpusart1_source;
-    enum rcc_lptim_clock_source_e lptime_source;
+    enum rcc_lptim_clock_source_e lptime1_source;
+    enum rcc_lptim_clock_source_e lptime2_source;
     enum rcc_swpmi1_clock_source_e swpmi1_source;
     enum rcc_mco_clock_source_e mco_source;
     enum rcc_lsco_clock_source_e lsco_source;
@@ -322,6 +371,7 @@ struct rcc_clock_scale_t
 void rcc_clock_setup_init(const struct rcc_clock_scale_t *);
 void rcc_update_clock_tree(const struct rcc_clock_scale_t *);
 uint32_t rcc_get_clock_freq(enum rcc_clock_tree_e);
+void rcc_print_clock_tree(void);
 
 #ifdef __cplusplus
 }

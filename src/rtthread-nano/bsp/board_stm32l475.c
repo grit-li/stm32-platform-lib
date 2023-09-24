@@ -4,6 +4,8 @@
 #include "stm32/usart.h"
 #include "stm32/gpio.h"
 
+#include "drv_gpio.h"
+
 static HGPIO hrx = MAKE_HGPIO(gpio_group_a, gpio_port_10, gpio_mode_output_alternate_push_pull_up, gpio_alternate_7, gpio_status_low);
 static HGPIO htx = MAKE_HGPIO(gpio_group_a, gpio_port_9, gpio_mode_output_alternate_push_pull_up, gpio_alternate_7, gpio_status_low);
 static unsigned int g_rt_console_init_flag = 0;
@@ -64,6 +66,8 @@ void rt_hw_board_init(void)
     irq_register_handler(irq_vector_type_systick, irq_systick_handler);
     systick_init();
 
+    rt_hw_pin_init();
+    
     rt_hw_console_init();
 
 #if defined(RT_USING_HEAP)

@@ -7,7 +7,7 @@
 #define RT_TICK_PER_SECOND  1000
 #define RT_ALIGN_SIZE   4
 #define RT_NAME_MAX    8
-#define RT_MAIN_THREAD_STACK_SIZE     2048
+#define RT_MAIN_THREAD_STACK_SIZE     4096
 
 #define RT_USING_HOOK
 #define RT_USING_TIMER_SOFT

@@ -14,12 +14,12 @@
 
 typedef long (*syscall_func)(void);
 #define MSH_FUNCTION_EXPORT_CMD(name, cmd, desc)                      \
-                const char __fsym_##cmd##_name[] SECTION(".rodata.name") = #cmd;    \
-                const char __fsym_##cmd##_desc[] SECTION(".rodata.name") = #desc;   \
-                RT_USED const struct finsh_syscall __fsym_##cmd SECTION("FSymTab")= \
+                const char __fsym_##name##_name[] SECTION(".rodata.name") = cmd;    \
+                const char __fsym_##name##_desc[] SECTION(".rodata.name") = desc;   \
+                RT_USED const struct finsh_syscall __fsym_##name SECTION("FSymTab")= \
                 {                           \
-                    __fsym_##cmd##_name,    \
-                    __fsym_##cmd##_desc,    \
+                    __fsym_##name##_name,    \
+                    __fsym_##name##_desc,    \
                     (syscall_func)&name     \
                 };
 
@@ -32,7 +32,7 @@ typedef long (*syscall_func)(void);
  * @param desc is the description of the command, which will show in help list.
  */
 #define MSH_CMD_EXPORT(command, desc)   \
-    MSH_FUNCTION_EXPORT_CMD(command, command, desc)
+  MSH_FUNCTION_EXPORT_CMD(command, #command, desc)
 
 /**
  * @ingroup msh

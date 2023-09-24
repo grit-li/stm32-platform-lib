@@ -130,7 +130,7 @@ uint32_t hal_rcc_pll_clock_configure(const struct hal_rcc_pll_configure_t* confi
     if(config) {
         hw_rcc_set_pll_clock_disable();
         if(config->pllm_prescaler <= rcc_clock_prescaler_8) {
-            hw_rcc_set_division_factor_for_main_pll(config->pllm_prescaler << RCC_PLLCFGR_PLLM_Pos);
+            hw_rcc_set_division_factor_for_main_pll((config->pllm_prescaler - rcc_clock_prescaler_1) << RCC_PLLCFGR_PLLM_Pos);
         }
         hw_rcc_set_multiplication_factor_for_main_pll(config->pll_mul << RCC_PLLCFGR_PLLN_Pos);
         switch(config->pllr_prescaler) {
