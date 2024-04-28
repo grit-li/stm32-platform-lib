@@ -28,7 +28,7 @@ install:
 	@if test -f install.sh; then \
 		bash install.sh \
 	else \
-		$(ECHO) $(call FONT_COLOR_HIGHT_RED, "$$dir Have no Makefile"); \
+		$(ECHO) $(call FONT_COLOR_HIGHT_RED, "$$dir Have no install.sh"); \
 	fi
 
 $(OBJ_DIR) $(LIBS_PATH):

@@ -1,211 +1,136 @@
-#include "hw/hw_rcc.h"
-#include "hw/hw_flash.h"
+#include "hw_common.h"
+#include "hw_rcc.h"
 #include "hal_rcc.h"
 
-static uint32_t hal_rcc_conv_msi_clock_speed(uint32_t speed)
+static int32_t clock_init(enum hal_rcc_clock_source_e source, uint32_t speed)
 {
-    uint32_t bRet = RCC_CR_MSIRANGE_6;
-    switch(speed) {
-        case KHZ(100):
-            bRet = RCC_CR_MSIRANGE_0;
+    switch(source) {
+        case hal_rcc_clock_source_lse:
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_FREQ, hw_rcc_clock_source_lse, speed);
             break;
-        case KHZ(200):
-            bRet = RCC_CR_MSIRANGE_1;
+        case hal_rcc_clock_source_lsi:
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_FREQ, hw_rcc_clock_source_lsi, speed);
             break;
-        case KHZ(400):
-            bRet = RCC_CR_MSIRANGE_2;
+        case hal_rcc_clock_source_msi:
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_FREQ, hw_rcc_clock_source_msi, speed);
             break;
-        case KHZ(800):
-            bRet = RCC_CR_MSIRANGE_3;
+        case hal_rcc_clock_source_hsi:
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_FREQ, hw_rcc_clock_source_hsi, speed);
             break;
-        case MHZ(1):
-            bRet = RCC_CR_MSIRANGE_4;
-            break;
-        case MHZ(2):
-            bRet = RCC_CR_MSIRANGE_5;
-            break;
-        case MHZ(4):
-            bRet = RCC_CR_MSIRANGE_6;
-            break;
-        case MHZ(8):
-            bRet = RCC_CR_MSIRANGE_7;
-            break;
-        case MHZ(16):
-            bRet = RCC_CR_MSIRANGE_8;
-            break;
-        case MHZ(24):
-            bRet = RCC_CR_MSIRANGE_9;
-            break;
-        case MHZ(32):
-            bRet = RCC_CR_MSIRANGE_10;
-            break;
-        case MHZ(48):
-            bRet = RCC_CR_MSIRANGE_11;
+        case hal_rcc_clock_source_hse:
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_FREQ, hw_rcc_clock_source_hse, speed);
             break;
         default:
             break;
     }
-    return bRet;
+    return hw_platform_errcode_success;
 }
 
-static uint32_t clock_init(enum hal_rcc_clock_source_e clock, uint32_t speed)
+static int32_t clock_deinit(enum hal_rcc_clock_source_e clock)
 {
     switch(clock) {
         case hal_rcc_clock_source_lse:
-            hw_rcc_set_lse_clock_enable();
-            hw_rcc_lse_clock_wait_ready();
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_ENABLE, hw_rcc_clock_source_lse, hw_rcc_clock_disable);
             break;
         case hal_rcc_clock_source_lsi:
-            hw_rcc_set_lsi_clock_enable();
-            hw_rcc_lsi_clock_wait_ready();
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_ENABLE, hw_rcc_clock_source_lsi, hw_rcc_clock_disable);
             break;
         case hal_rcc_clock_source_msi:
-            hw_rcc_set_msi_clock_ranges(hal_rcc_conv_msi_clock_speed(speed));
-            hw_rcc_set_msi_clock_enable();
-            hw_rcc_msi_clock_wait_ready();
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_ENABLE, hw_rcc_clock_source_msi, hw_rcc_clock_disable);
             break;
         case hal_rcc_clock_source_hsi:
-            hw_rcc_set_hsi_clock_enable();
-            hw_rcc_hsi_clock_wait_ready();
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_ENABLE, hw_rcc_clock_source_hsi, hw_rcc_clock_disable);
             break;
         case hal_rcc_clock_source_hse:
-            hw_rcc_set_hse_clock_enable();
-            hw_rcc_hse_clock_wait_ready();
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_ENABLE, hw_rcc_clock_source_hse, hw_rcc_clock_disable);
             break;
         default:
             break;
     }
-    return stm32_errcode_success;
+    return hw_platform_errcode_success;
 }
 
-static uint32_t clock_deinit(enum hal_rcc_clock_source_e clock)
+int32_t hal_rcc_clock_init(enum hal_rcc_clock_source_e source, uint32_t speed)
+{
+    return (speed != 0) ? clock_init(source, speed) : clock_deinit(source);
+}
+int32_t hal_rcc_pll_clock_init(const struct hal_rcc_pll_clock_configure_t* config)
+{
+    switch(config->source) {
+        case hal_rcc_pll_clock_source_msi: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PLL_CLOCK_SOURCE, hw_rcc_pll_clock_source_msi, 0); break;
+        case hal_rcc_pll_clock_source_hsi: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PLL_CLOCK_SOURCE, hw_rcc_pll_clock_source_hsi, 0); break;
+        case hal_rcc_pll_clock_source_hse: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PLL_CLOCK_SOURCE, hw_rcc_pll_clock_source_hse, 0); break;
+        default: break;
+    }
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_ENABLE, hw_rcc_clock_source_pll, hw_rcc_clock_disable);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PRESCALER, hw_rcc_prescaler_clock_pll, config->pll_prescaler);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_FREQ_MULTIPLIER, hw_rcc_clock_source_pll, config->pll_mul);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PRESCALER, hw_rcc_prescaler_clock_pllr, config->pllr_prescaler);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_MASTER_CLOCK_ENABLE, hw_rcc_clock_enable, 0);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_CLOCK_FREQ, hw_rcc_clock_source_pll, 0);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_FLASH_WAIT_TIME, config->flash_wait_time, 0);
+    return hw_platform_errcode_success;
+}
+int32_t hal_rcc_system_clock_init(const struct hal_rcc_system_clock_configure_t* config)
+{
+    switch(config->source) {
+        case hal_rcc_system_clock_source_msi: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_SYSTEM_CLOCK_SOURCE, hw_rcc_system_clock_source_msi, 0); break;
+        case hal_rcc_system_clock_source_hsi: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_SYSTEM_CLOCK_SOURCE, hw_rcc_system_clock_source_hsi, 0); break;
+        case hal_rcc_system_clock_source_hse: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_SYSTEM_CLOCK_SOURCE, hw_rcc_system_clock_source_hse, 0); break;
+        case hal_rcc_system_clock_source_pllclk: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_SYSTEM_CLOCK_SOURCE, hw_rcc_system_clock_source_pllclk, 0); break;
+        default:
+            break;
+    }
+
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PRESCALER, hw_rcc_prescaler_clock_ahb, config->ahb_prescaler);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PRESCALER, hw_rcc_prescaler_clock_apb1, config->apb1_prescaler);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PRESCALER, hw_rcc_prescaler_clock_apb2, config->apb2_prescaler);
+    hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PRESCALER, hw_rcc_prescaler_clock_cortex, config->cortex_system_prescaler);
+    return hw_platform_errcode_success;
+
+}
+int32_t hal_rcc_usart_clock_init(const struct hal_rcc_usart_clock_configure_t* config)
+{
+    switch(config->usart) {
+        case hal_rcc_usart_type_1:
+            hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_USART_CLOCK_SOURCE, config->source, 0);
+            break;
+        default:
+            break;
+    }
+    return hw_platform_errcode_success;
+}
+int32_t hal_rcc_clock_enable(enum hal_rcc_clock_enable_e clock)
 {
     switch(clock) {
-        case hal_rcc_clock_source_lse:
-            hw_rcc_set_lse_clock_disable();
-            break;
-        case hal_rcc_clock_source_lsi:
-            hw_rcc_set_lsi_clock_disable();
-            break;
-        case hal_rcc_clock_source_msi:
-            hw_rcc_set_msi_clock_disable();
-            break;
-        case hal_rcc_clock_source_hsi:
-            hw_rcc_set_hsi_clock_disable();
-            break;
-        case hal_rcc_clock_source_hse:
-            hw_rcc_set_hse_clock_disable();
-            break;
-        default:
-            break;
+        case hal_rcc_clock_usart1: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_usart1, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpioa: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioa, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpiob: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiob, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpioc: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioc, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpiod: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiod, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpioe: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioe, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpiof: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiof, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpiog: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiog, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_gpioh: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioh, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_afio:  hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_afio, hw_rcc_clock_enable); break;
+        case hal_rcc_clock_can1:  hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_can1, hw_rcc_clock_enable); break;
+   }
+    return hw_platform_errcode_success;
+}
+int32_t hal_rcc_clock_disable(enum hal_rcc_clock_enable_e clock)
+{
+     switch(clock) {
+         case hal_rcc_clock_usart1: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_usart1, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpioa: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioa, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpiob: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiob, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpioc: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioc, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpiod: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiod, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpioe: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioe, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpiof: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiof, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpiog: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpiog, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_gpioh: hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_gpioh, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_afio:  hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_afio, hw_rcc_clock_disable); break;
+         case hal_rcc_clock_can1:  hw_platform_send_cmd(hw_platform_rcc, HW_RCC_CMD_SET_PERIPHERAL_CLOCK_ENABLE, hw_rcc_peripheral_clock_can1, hw_rcc_clock_disable); break;
     }
-    return stm32_errcode_success;
-}
-
-uint32_t hal_rcc_clock_init(enum hal_rcc_clock_source_e clock, uint32_t speed)
-{
-    return (speed != 0) ? clock_init(clock, speed) : clock_deinit(clock);
-}
-
-uint32_t hal_rcc_pll_clock_select(enum rcc_pll_clock_source_e source)
-{
-    switch(source) {
-        case rcc_pll_clock_source_msi:
-            hw_rcc_set_main_clock_source(RCC_PLLCFGR_PLLSRC_MSI);
-            break;
-        case rcc_pll_clock_source_hsi:
-            hw_rcc_set_main_clock_source(RCC_PLLCFGR_PLLSRC_HSI);
-            break;
-        case rcc_pll_clock_source_hse:
-            hw_rcc_set_main_clock_source(RCC_PLLCFGR_PLLSRC_HSE);
-            break;
-        default:
-            break;
-    }
-    return stm32_errcode_success;
-}
-
-uint32_t hal_rcc_pll_clock_configure(const struct hal_rcc_pll_configure_t* config)
-{
-    if(config) {
-        hw_rcc_set_pll_clock_disable();
-        if(config->pllm_prescaler <= rcc_clock_prescaler_8) {
-            hw_rcc_set_division_factor_for_main_pll((config->pllm_prescaler - rcc_clock_prescaler_1) << RCC_PLLCFGR_PLLM_Pos);
-        }
-        hw_rcc_set_multiplication_factor_for_main_pll(config->pll_mul << RCC_PLLCFGR_PLLN_Pos);
-        switch(config->pllr_prescaler) {
-            case rcc_clock_prescaler_2:
-                hw_rcc_set_main_pll_division_factor_for_pllclk(RCC_PLLCFGR_PLLR_0);
-                break;
-            case rcc_clock_prescaler_4:
-                hw_rcc_set_main_pll_division_factor_for_pllclk(RCC_PLLCFGR_PLLR_1);
-                break;
-            case rcc_clock_prescaler_6:
-                hw_rcc_set_main_pll_division_factor_for_pllclk(RCC_PLLCFGR_PLLR_2);
-                break;
-            case rcc_clock_prescaler_8:
-                hw_rcc_set_main_pll_division_factor_for_pllclk(RCC_PLLCFGR_PLLR_3);
-                break;
-            default:
-                break;
-        }
-        hw_rcc_set_main_pll_clock_output_enable();
-        hw_rcc_set_pll_clock_enable();
-        hw_rcc_pll_clock_wait_ready();
-        hw_flash_set_latency(FLASH_ACR_LATENCY_4WS);
-    }
-    return stm32_errcode_success;
-}
-
-uint32_t hal_rcc_system_clock_select(enum rcc_system_clock_source_e source)
-{
-    switch(source) {
-        case rcc_system_clock_source_msi:
-            hw_rcc_set_system_clock_source(RCC_CFGR_SW_MSI);
-            break;
-        case rcc_system_clock_source_hsi:
-            hw_rcc_set_system_clock_source(RCC_CFGR_SW_HSI);
-            break;
-        case rcc_system_clock_source_hse:
-            hw_rcc_set_system_clock_source(RCC_CFGR_SW_HSE);
-            break;
-        case rcc_system_clock_source_pllclk:
-            hw_rcc_set_system_clock_source(RCC_CFGR_SW_PLL);
-            break;
-        default:
-            break;
-    }
-    return stm32_errcode_success;
-}
-
-uint32_t hal_rcc_usart_clock_select(enum hal_usart_type_e usart, enum rcc_usart_clock_source_e source)
-{
-    switch(usart) {
-        case hal_usart_type_1:
-            hw_rcc_select_usart1_clock_source(RCC_CCIPR_USART1SEL_0);
-        default:
-            break;
-    }
-    return stm32_errcode_success;
-}
-
-uint32_t hal_rcc_gpio_clock_enable(void)
-{
-    hw_rcc_set_gpioa_clock_enable();
-    hw_rcc_set_gpiob_clock_enable();
-    hw_rcc_set_gpioc_clock_enable();
-    hw_rcc_set_gpiod_clock_enable();
-    hw_rcc_set_gpioe_clock_enable();
-    hw_rcc_set_gpiof_clock_enable();
-    hw_rcc_set_gpiog_clock_enable();
-    hw_rcc_set_gpioh_clock_enable();
-    return stm32_errcode_success;
-}
-
-uint32_t hal_rcc_usart_clock_enable(void)
-{
-    hw_rcc_set_usart1_clock_enable();
-    // hw_rcc_set_usart2_clock_enable();
-    // hw_rcc_set_usart3_clock_enable();
-    return stm32_errcode_success;
+    return hw_platform_errcode_success;
 }

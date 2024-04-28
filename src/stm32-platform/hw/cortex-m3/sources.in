@@ -1,0 +1,9 @@
+
+SOURCES += hw/cortex-m3/cortex-m3.c
+SOURCES += hw/cortex-m3/hw_can.c
+SOURCES += hw/cortex-m3/hw_gpio.c
+SOURCES += hw/cortex-m3/hw_nvic.c
+SOURCES += hw/cortex-m3/hw_rcc.c
+SOURCES += hw/cortex-m3/hw_scb.c
+SOURCES += hw/cortex-m3/hw_systick.c
+SOURCES += hw/cortex-m3/hw_usart.c

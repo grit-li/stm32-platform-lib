@@ -1,0 +1,10 @@
+
+SOURCES += hw/cortex-m4/cortex-m3.c
+SOURCES += hw/cortex-m4/hw_rcc.c
+SOURCES += hw/cortex-m4/hw_nvic.c
+SOURCES += hw/cortex-m4/hw_scb.c
+SOURCES += hw/cortex-m4/hw_scs.c
+SOURCES += hw/cortex-m4/hw_flash.c
+SOURCES += hw/cortex-m4/hw_gpio.c
+SOURCES += hw/cortex-m4/hw_usart.c
+SOURCES += hw/cortex-m4/hw_systick.c

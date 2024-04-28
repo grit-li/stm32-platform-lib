@@ -20,11 +20,11 @@ SOURCES += src/device.c
 SOURCES += libcpu/arm/common/backtrace.c
 SOURCES += libcpu/arm/common/showmem.c
 
-SOURCES += libcpu/arm/cortex-m4/context_gcc.s
-SOURCES += libcpu/arm/cortex-m4/cpuport.c
+SOURCES += libcpu/arm/$(ARM_CPU_ARCH)/context_gcc.s
+SOURCES += libcpu/arm/$(ARM_CPU_ARCH)/cpuport.c
 
-SOURCES += bsp/drv_gpio.c
-SOURCES += bsp/board_stm32l475.c
+SOURCES += bsp/drivers/drv_gpio.c
+SOURCES += bsp/board_$(BUILD_PLATFORM_ID).c
 
 SOURCES += components/cpuusage/cpuusage.c
 

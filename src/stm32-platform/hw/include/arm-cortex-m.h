@@ -21,21 +21,6 @@ extern "C" {
 #define __OM     volatile                 /*! Defines 'write only' structure member permissions */
 #define __IOM    volatile                 /*! Defines 'read / write' structure member permissions */
 
-
-/******  Cortex-M4 Processor Exceptions Numbers ****************************************************************/
-enum cortex_interrupt_vector_table_e
-{
-    cortex_irq_non_maskable         = -14,    /*!< 2 Cortex-M4 Non Maskable Interrupt                                */
-    cortex_irq_hard_fault           = -13,    /*!< 3 Cortex-M4 Hard Fault Interrupt                                  */
-    cortex_irq_memory_management    = -12,    /*!< 4 Cortex-M4 Memory Management Interrupt                           */
-    cortex_irq_bus_fault            = -11,    /*!< 5 Cortex-M4 Bus Fault Interrupt                                   */
-    cortex_irq_usage_fault          = -10,    /*!< 6 Cortex-M4 Usage Fault Interrupt                                 */
-    cortex_irq_svcall               = -5,     /*!< 11 Cortex-M4 SV Call Interrupt                                    */
-    cortex_irq_debug_monitor        = -4,     /*!< 12 Cortex-M4 Debug Monitor Interrupt                              */
-    cortex_irq_pendsv               = -2,     /*!< 14 Cortex-M4 Pend SV Interrupt                                    */
-    cortex_irq_systick              = -1,     /*!< 15 Cortex-M4 System Tick Interrupt                                */
-};
-
 /* ###################  Compiler specific Intrinsics  ########################### */
 static inline void stm32_cortex_enable_irq(void)
 {

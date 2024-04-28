@@ -1,63 +1,90 @@
-#include <stdio.h>
-#include "hw/hw_gpio.h"
+#include "hw_common.h"
+#include "hw_gpio.h"
 #include "hal_gpio.h"
 
-static struct GPIO_TypeDef* hal_gpio_get_register(enum gpio_group_e group)
+int32_t hal_gpio_set_prop(uint32_t gpio, uint32_t mode)
 {
-    struct GPIO_TypeDef* bRet = NULL;
-    switch(group) {
-        case gpio_group_a: bRet = __GET_GPIO_REGISTER__(GPIOA); break;
-        case gpio_group_b: bRet = __GET_GPIO_REGISTER__(GPIOB); break;
-        case gpio_group_c: bRet = __GET_GPIO_REGISTER__(GPIOC); break;
-        case gpio_group_d: bRet = __GET_GPIO_REGISTER__(GPIOD); break;
-        case gpio_group_e: bRet = __GET_GPIO_REGISTER__(GPIOE); break;
-        case gpio_group_f: bRet = __GET_GPIO_REGISTER__(GPIOF); break;
-        case gpio_group_g: bRet = __GET_GPIO_REGISTER__(GPIOG); break;
-        case gpio_group_h: bRet = __GET_GPIO_REGISTER__(GPIOH); break;
+    return hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_PROP, gpio, mode);
+}
+int32_t hal_gpio_set_mode(uint32_t gpio, enum hal_gpio_mode_e mode)
+{
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(mode) {
+        case hal_gpio_mode_input:       bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_MODE, gpio, hw_gpio_mode_input);        break;
+        case hal_gpio_mode_output:      bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_MODE, gpio, hw_gpio_mode_output);       break;
+        case hal_gpio_mode_alternate:   bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_MODE, gpio, hw_gpio_mode_alternate);    break;
+        case hal_gpio_mode_analog:      bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_MODE, gpio, hw_gpio_mode_analog);       break;
+        default: break;
+    }
+    return bRet;
+}
+int32_t hal_gpio_set_output_mode(uint32_t gpio, enum hal_gpio_output_mode_e mode)
+{
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(mode) {
+        case hal_gpio_output_mode_pp: bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_OUTPUT_MODE, gpio, hw_gpio_output_mode_push_pull);  break;
+        case hal_gpio_output_mode_od: bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_OUTPUT_MODE, gpio, hw_gpio_output_mode_open_drain); break;
         default: break;
     }
     return bRet;
 }
 
-uint32_t hal_gpio_set_mode(enum gpio_group_e group, enum gpio_port_e port, enum gpio_mode_e mode, enum gpio_alternate_e alternate)
+int32_t hal_gpio_set_output_speed(uint32_t gpio, enum hal_gpio_speed_e speed)
 {
-    struct GPIO_TypeDef* GPIOx = hal_gpio_get_register(group);
-    if(GPIOx == NULL) {
-        return stm32_errcode_param_error;
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(speed) {
+        case hal_gpio_speed_low:        bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_OUTPUT_SPEED, gpio, hw_gpio_output_speed_low);      break;
+        case hal_gpio_speed_medium:     bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_OUTPUT_SPEED, gpio, hw_gpio_output_speed_medium);   break;
+        case hal_gpio_speed_high:       bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_OUTPUT_SPEED, gpio, hw_gpio_output_speed_high);     break;
+        case hal_gpio_speed_very_high:  bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_OUTPUT_SPEED, gpio, hw_gpio_output_speed_very_high);break;
+        default: break;
     }
-    if(mode & GPIO_MODE_ALTERNATE) {
-        hw_gpio_set_alternate_function(GPIOx, port >> 3, 0xFUL << ((port % 8) << 2), alternate << ((port % 8) << 2));
-    }
-    hw_gpio_set_mode(GPIOx, 0x03 << (port << 1), (mode & GPIO_MODE_MASK) << (port << 1));
-    if(mode & GPIO_MODE_OUTPUT) {
-        hw_gpio_set_output_speed(GPIOx,  0x03 << (port << 1),  0x03 << (port << 1));
-        hw_gpio_set_output_type(GPIOx, 0x01 << port, ((mode & GPIO_OTYPE_MASK) >> 4) << port);
-    }
-    if(mode & GPIO_MODE_ANALOG) {
-        hw_gpio_switch_analog_port_control(GPIOx, 0x01 << port, 0x01 << port);
-    }
-    hw_gpio_set_pull_up_pull_down(GPIOx,  0x03 << (port << 1),  ((mode & GPIO_PUPD_MASK) >> 2) << (port << 1));
-    return stm32_errcode_success;
+    return bRet;
 }
-uint32_t hal_gpio_set_status(enum gpio_group_e group, enum gpio_port_e port, enum gpio_status_e status)
+int32_t hal_gpio_set_pupd_mode(uint32_t gpio, enum hal_gpio_pupd_e pupd)
 {
-    struct GPIO_TypeDef* GPIOx = hal_gpio_get_register(group);
-    if(GPIOx == NULL) {
-        return stm32_errcode_param_error;
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(pupd) {
+        case hal_gpio_pupd_nopull:      bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_PUPD_MODE, gpio, hw_gpio_pupd_nopull);      break;
+        case hal_gpio_pupd_pull_up:     bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_PUPD_MODE, gpio, hw_gpio_pupd_pull_up);     break;
+        case hal_gpio_pupd_pull_down:   bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_PUPD_MODE, gpio, hw_gpio_pupd_pull_down);   break;
+        default: break;
     }
-    if(status == gpio_status_hight) {
-        hw_gpio_set_port(GPIOx, 0x01 << port, 0x01 << port);
-    } else {
-        hw_gpio_port_output_reset(GPIOx, 0x01 << port, 0x01 << port);
-    }
-    return stm32_errcode_success;
+    return bRet;
 }
-uint32_t hal_gpio_set_speed(enum gpio_group_e group, enum gpio_port_e port)
+
+int32_t hal_gpio_set_alternate(uint32_t gpio, uint8_t af)
 {
-    struct GPIO_TypeDef* GPIOx = hal_gpio_get_register(group);
-    if(GPIOx == NULL) {
-        return stm32_errcode_param_error;
-    }
-    hw_gpio_set_output_speed(GPIOx,  0x03 << (port << 1),  0x03 << (port << 1));
-    return stm32_errcode_success;
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_ALTERNATE, gpio, af);
+    return bRet;
 }
+int32_t hal_gpio_set_status(uint32_t gpio, enum hal_gpio_status_e status)
+{
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(status) {
+        case hal_gpio_status_low:   bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_STATUS, gpio, hw_gpio_status_low);      break;
+        case hal_gpio_status_high:  bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_SET_STATUS, gpio, hw_gpio_status_high);    break;
+        default: break;
+    }
+    return bRet;
+}
+enum hal_gpio_status_e hal_gpio_get_status(uint32_t gpio)
+{
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    enum hw_gpio_status_e state = hw_gpio_status_null;
+    enum hal_gpio_status_e hal_gpio_state = hal_gpio_status_null;
+    bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_GET_STATUS, gpio, (LPARAM)&state);
+    switch(state) {
+        case hw_gpio_status_low: hal_gpio_state = hal_gpio_status_low; break;
+        case hw_gpio_status_high: hal_gpio_state = hal_gpio_status_high; break;
+        default: break;
+    }
+    return hal_gpio_state;
+}
+int32_t hal_gpio_toggle_status(uint32_t gpio)
+{
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    return bRet;
+}
+

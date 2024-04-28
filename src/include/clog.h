@@ -107,12 +107,12 @@
 #define TARGET_RLS                      FONT_COLOR(COLOR_HIGHT_WHITE, "[")  FONT_COLOR(COLOR_HIGHT_BLUE,    "RELEASE")   FONT_COLOR(COLOR_HIGHT_WHITE, "]")
 
 #define LOG_TAG                         "[STM32]"
-#define INFO_TAG                        "[%s][%d]"
-#define STM32_LOG_ERR(fmt, ...)         debug_printf(LOG_TAG TARGET_ERR INFO_TAG fmt, __FILE__, __LINE__, ##__VA_ARGS__)
-#define STM32_LOG_WAR(fmt, ...)         debug_printf(LOG_TAG TARGET_WAR INFO_TAG fmt, __FILE__, __LINE__, ##__VA_ARGS__)
-#define STM32_LOG_DEB(fmt, ...)         debug_printf(LOG_TAG TARGET_DEB INFO_TAG fmt, __FILE__, __LINE__, ##__VA_ARGS__)
-#define STM32_LOG_INFO(fmt, ...)        debug_printf(LOG_TAG TARGET_INFO INFO_TAG fmt, __FILE__, __LINE__, ##__VA_ARGS__)
-#define STM32_LOG_FAIL(fmt, ...)        debug_printf(LOG_TAG TARGET_FAIL INFO_TAG fmt, __FILE__, __LINE__, ##__VA_ARGS__)
+#define INFO_TAG                        "[%s][%d][%s]"
+#define STM32_LOG_ERR(fmt, ...)         debug_printf(LOG_TAG TARGET_ERR INFO_TAG fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define STM32_LOG_WAR(fmt, ...)         debug_printf(LOG_TAG TARGET_WAR INFO_TAG fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define STM32_LOG_DEB(fmt, ...)         debug_printf(LOG_TAG TARGET_DEB INFO_TAG fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define STM32_LOG_INFO(fmt, ...)        debug_printf(LOG_TAG TARGET_INFO INFO_TAG fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define STM32_LOG_FAIL(fmt, ...)        debug_printf(LOG_TAG TARGET_FAIL INFO_TAG fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 
 #define STM32_LOG_COLOR_D(color, fmt, ...)  debug_printf(FONT_ ## color(fmt), ##__VA_ARGS__)
 #define STM32_LOG_COLOR_R(color, fmt, ...)  printf(FONT_ ## color(fmt), ##__VA_ARGS__)

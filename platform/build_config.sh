@@ -1,0 +1,19 @@
+#!/bin/bash
+
+export EXTERN_DEFINED="-DBUILD_CHIP_${BUILD_PLATFORM_CHIP} "
+
+if [ -z $SUPPORT_STM32_ASSERT ]; then
+export SUPPORT_STM32_ASSERT=0
+fi
+
+if [ -z $SDK_RELEASE ]; then
+export SDK_RELEASE=0
+fi 
+
+if [ $SUPPORT_STM32_ASSERT -eq 1 ]; then
+export EXTERN_DEFINED="$EXTERN_DEFINED -DUSE_STM32_ASSERT "
+fi
+
+if [ $SDK_RELEASE -eq 1 ]; then
+export EXTERN_DEFINED="$EXTERN_DEFINED -DSDK_RELEASE "
+fi

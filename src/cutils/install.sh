@@ -1,10 +1,8 @@
 #!/bin/bash
 CWD=$PWD
 
-INSTALL_PATH=$CWD/../../out/sysroot
-
-mkdir -p $INSTALL_PATH/include/cutils
-cp -ar $CWD/include/* $INSTALL_PATH/include/cutils
-cp -ar $CWD/lib $INSTALL_PATH
+mkdir -p $INSTALL_SYSROOT_PATH/include/cutils
+cp -ar $CWD/include/* $INSTALL_SYSROOT_PATH/include/cutils
+cp -ar $CWD/lib $INSTALL_SYSROOT_PATH
 
 echo "cp cutils done"

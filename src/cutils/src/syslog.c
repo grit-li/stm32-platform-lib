@@ -18,7 +18,7 @@ void syslog_print(enum LOG_LEVEL_E level, const char* prefix, const char* funcNa
 
     va_list args;
     va_start(args, fmt);
-    n += rt_snprintf(&buff[n], SYSLOG_BUFFER_SIZE - n, fmt, args);
+    n += rt_vsnprintf(&buff[n], SYSLOG_BUFFER_SIZE - n, fmt, args);
     va_end(args);
     syslogd_writebuff(buff, n);
 }

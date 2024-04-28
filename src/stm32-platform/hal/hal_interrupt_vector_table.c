@@ -1,113 +1,101 @@
-#include <stdio.h>
-#include "hw/hw_scb.h"
-#include "hw/hw_nvic.h"
+#include "stm32_types.h"
+#include "hw_common.h"
+#include "hw_nvic.h"
 #include "hal_interrupt_vector_table.h"
 
-#define __NVIC_PRIO_BITS 3
-#define IVT_INVALID_IRQ     (-127)
-
-static int8_t ivt_map[irq_vector_type_max] = {
-    [irq_vector_type_systick] = cortex_irq_systick,
-};
-
-static int8_t hal_ivt_map(enum irq_vector_type_e irq)
+int32_t hal_irq_set_priority_group(enum hal_irqn_priority_group_e group)
 {
-    int8_t bRet = IVT_INVALID_IRQ;
-    if(irq < irq_vector_type_max) {
-        bRet = ivt_map[irq];
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(group) {
+        case hal_irqn_priority_group_0: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_GROUP, hw_nvic_priority_group_0, 0); break;
+        case hal_irqn_priority_group_1: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_GROUP, hw_nvic_priority_group_1, 0); break;
+        case hal_irqn_priority_group_2: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_GROUP, hw_nvic_priority_group_2, 0); break;
+        case hal_irqn_priority_group_3: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_GROUP, hw_nvic_priority_group_3, 0); break;
+        case hal_irqn_priority_group_4: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_GROUP, hw_nvic_priority_group_4, 0); break;
+        default: break;
     }
     return bRet;
 }
-uint32_t hal_irq_set_priority_group(enum irq_priority_group_e group)
+enum hal_irqn_priority_group_e hal_irq_get_priority_group(void)
 {
-    hw_scb_set_priority_group(group << SCB_AIRCR_PRIGROUP_Pos);
-    return stm32_errcode_success;
-}
-
-enum irq_priority_group_e hal_irq_get_priority_group(void)
-{
-    return (hw_scb_get_priority_group() >> SCB_AIRCR_PRIGROUP_Pos);
-}
-
-uint32_t hal_irq_enable(enum irq_vector_type_e irq)
-{
-    int8_t irq_map = hal_ivt_map(irq);
-    if(irq == IVT_INVALID_IRQ) {
-        return stm32_errcode_param_error;
+    enum hw_nvic_priority_group_e group = hw_nvic_priority_group_0;
+    enum hal_irqn_priority_group_e bRet = hal_irqn_priority_group_0;
+    hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_GROUP, (WPARAM)&group, 0);
+    switch(group) {
+        case hw_nvic_priority_group_0: bRet = hal_irqn_priority_group_0; break;
+        case hw_nvic_priority_group_1: bRet = hal_irqn_priority_group_1; break;
+        case hw_nvic_priority_group_2: bRet = hal_irqn_priority_group_2; break;
+        case hw_nvic_priority_group_3: bRet = hal_irqn_priority_group_3; break;
+        case hw_nvic_priority_group_4: bRet = hal_irqn_priority_group_4; break;
+        default: break;
     }
-    if(irq >= 0) {
-        hw_nvic_enable_irq(irq_map);
+    return bRet;
+}
+int32_t hal_irq_enable(enum hal_irqn_type_e irqn)
+{
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(irqn) {
+        case hal_irqn_type_systick: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_ENABLE, hw_nvic_irq_type_systick, hw_nvic_enable); break;
+        case hal_irqn_type_can1_rx0: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_ENABLE, hw_nvic_irq_type_can1_rx0, hw_nvic_enable); break;
+        default: break;
     }
-    return stm32_errcode_success;
+    return bRet;
 }
-
-uint32_t hal_irq_get_enable(enum irq_vector_type_e irq)
+int32_t hal_irq_get_enable(enum hal_irqn_type_e irqn)
 {
-    return stm32_enable;
-}
-
-uint32_t hal_irq_disable(enum irq_vector_type_e irq)
-{
-    return stm32_errcode_success;
-}
-
-uint32_t hal_irq_get_disable(enum irq_vector_type_e irq)
-{
-    return stm32_enable;
-}
-
-uint32_t hal_irq_set_priority(enum irq_vector_type_e irq, uint32_t priority)
-{
-    int8_t irq_map = hal_ivt_map(irq);
-    if(irq == IVT_INVALID_IRQ) {
-        return stm32_errcode_param_error;
+    enum hw_nvic_enable_e en = hw_nvic_disable;
+    switch(irqn) {
+        case hal_irqn_type_systick: hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_ENABLE, hw_nvic_irq_type_systick, (LPARAM)&en); break;
+        case hal_irqn_type_can1_rx0: hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_ENABLE, hw_nvic_irq_type_can1_rx0, (LPARAM)&en); break;
+        default: break;
     }
-    if(irq >= 0) {
-        hw_nvic_set_priority(irq_map, priority);
-    } else {
-        hw_scb_set_priority(irq_map, priority);
-    }
-    return stm32_errcode_success;
+    return en == hw_nvic_enable ? stm32_true : stm32_false;
 }
-
-uint32_t hal_irq_get_priority(enum irq_vector_type_e irq, uint32_t *const priority)
+int32_t hal_irq_disable(enum hal_irqn_type_e irqn)
 {
-    int8_t irq_map = hal_ivt_map(irq);
-    if(irq == IVT_INVALID_IRQ) {
-        return stm32_errcode_param_error;
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    switch(irqn) {
+        case hal_irqn_type_systick: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_ENABLE, hw_nvic_irq_type_systick, hw_nvic_disable); break;
+        case hal_irqn_type_can1_rx0: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_ENABLE, hw_nvic_irq_type_can1_rx0, hw_nvic_disable); break;
+        default: break;
     }
-    if(irq >= 0) {
-        *priority = hw_nvic_get_priority(irq_map);
-    } else {
-        *priority = hw_scb_get_priority(irq_map);
+    return bRet;
+}
+int32_t hal_irq_get_disable(enum hal_irqn_type_e irqn)
+{
+    enum hw_nvic_enable_e en = hw_nvic_disable;
+    switch(irqn) {
+        case hal_irqn_type_systick: hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_ENABLE, hw_nvic_irq_type_systick, (LPARAM)&en); break;
+        case hal_irqn_type_can1_rx0: hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_ENABLE, hw_nvic_irq_type_can1_rx0, (LPARAM)&en); break;
+        default: break;
     }
-    return stm32_errcode_success;
+    return en == hw_nvic_disable ? stm32_true : stm32_false;
 }
-
-uint32_t hal_irq_encode_priority(enum irq_priority_group_e group, enum irq_preempt_priority_e preempt_priority, enum irq_sub_priority_e sub_priority)
+int32_t hal_irq_set_priority(enum hal_irqn_type_e irqn, uint8_t preempt_priority, uint8_t sub_priority)
 {
-    uint32_t PriorityGroupTmp = (group & (uint32_t)0x07UL);
-    uint32_t PreemptPriorityBits;
-    uint32_t SubPriorityBits;
-
-    PreemptPriorityBits = ((7UL - PriorityGroupTmp) > (uint32_t)(__NVIC_PRIO_BITS)) ? (uint32_t)(__NVIC_PRIO_BITS) : (uint32_t)(7UL - PriorityGroupTmp);
-    SubPriorityBits     = ((PriorityGroupTmp + (uint32_t)(__NVIC_PRIO_BITS)) < (uint32_t)7UL) ? (uint32_t)0UL : (uint32_t)((PriorityGroupTmp - 7UL) + (uint32_t)(__NVIC_PRIO_BITS));
-
-    return (
-            ((preempt_priority & (uint32_t)((1UL << (PreemptPriorityBits)) - 1UL)) << SubPriorityBits) |
-            ((sub_priority     & (uint32_t)((1UL << (SubPriorityBits    )) - 1UL)))
-            );
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    struct hw_nvic_priority_t priority;
+    priority.preempt_priority = preempt_priority;
+    priority.sub_priority = sub_priority;
+    switch(irqn) {
+        case hal_irqn_type_systick: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_PRIORITY, hw_nvic_irq_type_systick, (LPARAM)&priority); break;
+        case hal_irqn_type_can1_rx0: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_PRIORITY, hw_nvic_irq_type_can1_rx0, (LPARAM)&priority); break;
+        default: break;
+    }
+    return bRet;
 }
 
-void hal_irq_decode_priority(uint32_t priority, enum irq_priority_group_e group, enum irq_preempt_priority_e *const preempt_priority, enum irq_sub_priority_e *const sub_priority)
+int32_t hal_irq_get_priority(enum hal_irqn_type_e irqn, uint8_t *const preempt_priority, uint8_t *const sub_priority)
 {
-    uint32_t PriorityGroupTmp = (group & (uint32_t)0x07UL);
-    uint32_t PreemptPriorityBits;
-    uint32_t SubPriorityBits;
-
-    PreemptPriorityBits = ((7UL - PriorityGroupTmp) > (uint32_t)(__NVIC_PRIO_BITS)) ? (uint32_t)(__NVIC_PRIO_BITS) : (uint32_t)(7UL - PriorityGroupTmp);
-    SubPriorityBits     = ((PriorityGroupTmp + (uint32_t)(__NVIC_PRIO_BITS)) < (uint32_t)7UL) ? (uint32_t)0UL : (uint32_t)((PriorityGroupTmp - 7UL) + (uint32_t)(__NVIC_PRIO_BITS));
-
-    *preempt_priority = (priority >> SubPriorityBits) & (uint32_t)((1UL << (PreemptPriorityBits)) - 1UL);
-    *sub_priority     = (priority                   ) & (uint32_t)((1UL << (SubPriorityBits    )) - 1UL);
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    struct hw_nvic_priority_t priority;
+    switch(irqn) {
+        case hal_irqn_type_systick: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_PRIORITY, hw_nvic_irq_type_systick, (LPARAM)&priority); break;
+        case hal_irqn_type_can1_rx0: bRet = hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_GET_PRIORITY, hw_nvic_irq_type_can1_rx0, (LPARAM)&priority); break;
+        default: break;
+    }
+    *preempt_priority = priority.preempt_priority;
+    *sub_priority = priority.sub_priority;
+    return bRet;
 }
+

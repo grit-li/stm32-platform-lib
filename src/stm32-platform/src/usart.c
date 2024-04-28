@@ -1,13 +1,14 @@
 #include "hal/hal_usart.h"
+#include "stm32/rcc.h"
 #include "stm32/usart.h"
 
 uint32_t usart_init(const struct usart_init_t* init)
 {
     if(!init) {
-        return stm32_errcode_param_error;
+        return stm32_errcode_param_invaild;
     }
 
-    hal_usart_set_baud_rate(init->type, init->baud);
+    hal_usart_set_baud_rate(init->type, rcc_get_clock_freq(rcc_clock_sysclk), init->baud);
     hal_usart_set_word_length(init->type, init->word_length);
     hal_usart_set_parity(init->type);
     hal_usart_set_mode(init->type);

@@ -80,9 +80,9 @@ _reswitch:
  * R1 --> switch to thread stack
  * psr, pc, LR, R12, R3, R2, R1, R0 are pushed into [from] stack
  */
-    .global PendSV_Handler
-    .type PendSV_Handler, %function
-PendSV_Handler:
+    .global pendsv_handler
+    .type pendsv_handler, %function
+pendsv_handler:
     /* disable interrupt to protect context switch */
     MRS     R2, PRIMASK
     CPSID   I
@@ -171,9 +171,9 @@ rt_hw_interrupt_thread_switch:
     BX      LR
     NOP
 
-    .global HardFault_Handler
-    .type HardFault_Handler, %function
-HardFault_Handler:
+    .global hard_fault_handler
+    .type hard_fault_handler, %function
+hard_fault_handler:
     /* get current context */
     MRS     r0, msp                 /* get fault context from handler. */
     TST     lr, #0x04               /* if(!EXC_RETURN[2]) */

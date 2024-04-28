@@ -115,6 +115,8 @@ enum irq_priority_group_e
     irq_priority_group_2,
     irq_priority_group_3,
     irq_priority_group_4,
+
+    irq_priority_group_null,
 };
 
 enum irq_preempt_priority_e
@@ -133,19 +135,19 @@ enum irq_sub_priority_e
     irq_sub_priority_3,
 };
 
-uint32_t irq_register_handler(enum irq_vector_type_e, irq_vector_handler);
-uint32_t irq_unregister_handler(enum irq_vector_type_e);
+int32_t irq_register_handler(enum irq_vector_type_e, irq_vector_handler);
+int32_t irq_unregister_handler(enum irq_vector_type_e);
 
-uint32_t irq_set_priority_group(enum irq_priority_group_e);
+int32_t irq_set_priority_group(enum irq_priority_group_e);
 enum irq_priority_group_e irq_get_priority_group(void);
 
-uint32_t irq_set_priority(enum irq_vector_type_e, enum irq_preempt_priority_e, enum irq_sub_priority_e);
-uint32_t irq_get_priority(enum irq_vector_type_e, enum irq_preempt_priority_e *const, enum irq_sub_priority_e *const);
+int32_t irq_set_priority(enum irq_vector_type_e, enum irq_preempt_priority_e, enum irq_sub_priority_e);
+int32_t irq_get_priority(enum irq_vector_type_e, enum irq_preempt_priority_e *const, enum irq_sub_priority_e *const);
 
-uint32_t irq_enable(enum irq_vector_type_e);
-uint32_t irq_get_enable(enum irq_vector_type_e);
-uint32_t irq_disable(enum irq_vector_type_e);
-uint32_t irq_get_disable(enum irq_vector_type_e);
+int32_t irq_enable(enum irq_vector_type_e);
+int32_t irq_get_enable(enum irq_vector_type_e);
+int32_t irq_disable(enum irq_vector_type_e);
+int32_t irq_get_disable(enum irq_vector_type_e);
 
 void nmi_handler(void);
 void hard_fault_handler(void);
@@ -156,6 +158,7 @@ void svcall_handler(void);
 void debug_monitor_handler(void);
 void pendsv_handler(void);
 void systick_handler(void);
+void can1_rx0_handler(void);
 
 #ifdef __cplusplus
 }

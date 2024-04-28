@@ -17,7 +17,7 @@ enum stm32_errcode_e
 {
     stm32_errcode_success       =  0,
     stm32_errcode_fail          = -1,
-    stm32_errcode_param_error   = -2,
+    stm32_errcode_param_invaild = -2,
 };
 
 #endif

@@ -1,211 +1,133 @@
-#include <stdio.h>
-#include "hw/hw_usart.h"
+#include "hw_common.h"
+#include "hw_usart.h"
 #include "hal_usart.h"
 
-
-#define USART_BRR_MIN    0x10U        /* USART BRR minimum authorized value */
-#define USART_BRR_MAX    0xFFFFU      /* USART BRR maximum authorized value */
-#define USART_DIV_SAMPLING16(__PCLK__, __BAUD__) (((__PCLK__) + ((__BAUD__)/2U)) / (__BAUD__))
-
-static struct USART_TypeDef* hal_usart_get_register(enum usart_type_e type)
+uint32_t hal_usart_set_baud_rate(uint32_t usart, uint32_t pclk, uint32_t baud_rate)
 {
-    struct USART_TypeDef* bRet = NULL;
-    switch(type) {
-        case usart_type_1: bRet = __GET_USART_REGISTER__(USART1); break;
-        case usart_type_2: bRet = __GET_USART_REGISTER__(USART2); break;
-        case usart_type_3: bRet = __GET_USART_REGISTER__(USART3); break;
-        default: break;
-    }
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    struct hw_usart_baud_rate_t baud_config = {
+        .clk = pclk,
+        .baud = baud_rate,
+    };
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_disable);
+    bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_BAUD_RATE, usart, (LPARAM)&baud_config);
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
     return bRet;
 }
-
-uint32_t hal_usart_set_baud_rate(enum usart_type_e type, enum usart_baud_e baud_rate)
+uint32_t hal_usart_set_word_length(uint32_t usart, enum hal_usart_word_length_e word_length)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-    uint32_t usartdiv = 0x00000000;
-    uint16_t brrtemp;
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_disable(USARTx);
-    usartdiv = USART_DIV_SAMPLING16(80 * 1000 * 1000, baud_rate);
-    if((usartdiv >= USART_BRR_MIN) && (usartdiv <= USART_BRR_MAX)) {
-        brrtemp = (uint16_t)(usartdiv & 0xFFF0U);
-        brrtemp |= (uint16_t)((usartdiv & (uint16_t)0x000FU) >> 1U);
-        hw_usart_set_baud_rate(USARTx, brrtemp);
-    }
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;
-}
-
-uint32_t hal_usart_set_word_length(enum usart_type_e type, enum usart_word_length_e word_length)
-{
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_disable(USARTx);
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_disable);
     switch(word_length) {
-        case usart_word_length_7bit:
-            hw_usart_set_m0(USARTx, 0);
-            hw_usart_set_m1(USARTx, USART_CR1_M1);
+        case hal_usart_word_length_7bit:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_WORD_LENGTH, usart, hw_usart_word_length_7bit);
             break;
-        case usart_word_length_8bit:
-            hw_usart_set_m0(USARTx, 0);
-            hw_usart_set_m1(USARTx, 0);
+        case hal_usart_word_length_8bit:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_WORD_LENGTH, usart, hw_usart_word_length_8bit);
             break;
-        case usart_word_length_9bit:
-            hw_usart_set_m0(USARTx, USART_CR1_M0);
-            hw_usart_set_m1(USARTx, 0);
+        case hal_usart_word_length_9bit:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_WORD_LENGTH, usart, hw_usart_word_length_9bit);
             break;
         default:
             break;
     }
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;  
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
+    return bRet;
+
 }
-
-uint32_t hal_usart_set_parity(enum usart_type_e type)
+uint32_t hal_usart_set_parity(uint32_t usart)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_disable(USARTx);
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_disable);
     // Parity None
-    hw_usart_set_parity_control_disable(USARTx);
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;  
+    bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_PARITY_CONTROL, usart, hw_usart_parity_control_none);
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
+    return bRet;
 }
-
-uint32_t hal_usart_set_mode(enum usart_type_e type)
+uint32_t hal_usart_set_mode(uint32_t usart)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_disable(USARTx);
-    hw_usart_set_receiver_enable(USARTx);
-    hw_usart_set_transmitter_enable(USARTx);
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;  
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_disable);
+    bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_TRANSPORT_MODE, usart, hw_usart_transport_mode_rx_tx);
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
+    return bRet;
 }
-
-uint32_t hal_usart_set_stop_bit(enum usart_type_e type, enum usart_stop_bits_e stop_bits)
+uint32_t hal_usart_set_stop_bit(uint32_t usart, enum hal_usart_stop_bits_e stop_bits)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_disable(USARTx);
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_disable);
     switch(stop_bits) {
-        case usart_stop_bits_0_5:
-            hw_usart_set_stop_bit(USARTx, USART_CR2_STOP_0_5);
+        case hal_usart_stop_bits_0_5:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_STOP_BITS, usart, hw_usart_stop_bits_0_5);
             break;
-        case usart_stop_bits_1:
-            hw_usart_set_stop_bit(USARTx, USART_CR2_STOP_1);
+        case hal_usart_stop_bits_1:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_STOP_BITS, usart, hw_usart_stop_bits_1);
             break;
-        case usart_stop_bits_1_5:
-            hw_usart_set_stop_bit(USARTx, USART_CR2_STOP_1_5);
+        case hal_usart_stop_bits_1_5:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_STOP_BITS, usart, hw_usart_stop_bits_1_5);
             break;
-        case usart_stop_bits_2:
-            hw_usart_set_stop_bit(USARTx, USART_CR2_STOP_2);
+        case hal_usart_stop_bits_2:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_STOP_BITS, usart, hw_usart_stop_bits_2);
             break;
         default:
             break;
     }
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;  
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
+    return bRet;
 }
-
-uint32_t hal_usart_set_flow_control(enum usart_type_e type, enum usart_flow_control_e control)
+uint32_t hal_usart_set_flow_control(uint32_t usart, enum hal_usart_flow_control_e control)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_disable(USARTx);
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_disable);
     switch(control) {
-        case usart_flow_control_none:
-            hw_usart_set_cts_disable(USARTx);
-            hw_usart_set_rts_disable(USARTx);
+        case hal_usart_flow_control_none:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_FLOW_CONTROL, usart, hw_usart_flow_control_none);
             break;
-        case usart_flow_control_rts:
-            hw_usart_set_cts_disable(USARTx);
-            hw_usart_set_rts_enable(USARTx);
+        case hal_usart_flow_control_rts:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_FLOW_CONTROL, usart, hw_usart_flow_control_rts);
             break;
-        case usart_flow_control_cts:
-            hw_usart_set_cts_enable(USARTx);
-            hw_usart_set_rts_disable(USARTx);
+        case hal_usart_flow_control_cts:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_FLOW_CONTROL, usart, hw_usart_flow_control_cts);
             break;
-        case usart_flow_control_rts_cts:
-            hw_usart_set_cts_enable(USARTx);
-            hw_usart_set_rts_enable(USARTx);
+        case hal_usart_flow_control_rts_cts:
+            bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_FLOW_CONTROL, usart, hw_usart_flow_control_rts_cts);
             break;
         default:
             break;
     }
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;  
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
+    return bRet;
 }
-
-uint32_t hal_usart_transport_data(enum usart_type_e type, const uint8_t* data, uint32_t length)
+uint32_t hal_usart_transport_data(uint32_t usart, const uint8_t* data, uint32_t length)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    for(uint32_t i = 0; i < length; i++) {
-        while(hw_usart_transmit_data_register_empty_flag(USARTx) != USART_ISR_TXE);
-        hw_usart_transmit_data(USARTx, data[i]);
-    }
-    return stm32_errcode_success;  
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    struct hw_usart_send_data_t buff = {
+        .data = data,
+        .size = length,
+    };
+    bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SEND_DATA, usart, (LPARAM)&buff);
+    return bRet;
 }
-uint32_t hal_usart_receive_data(enum usart_type_e type, uint8_t* data, uint32_t length)
+uint32_t hal_usart_receive_data(uint32_t usart, uint8_t* data, uint32_t length)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    for(uint32_t i = 0; i < length; i++) {
-        while(hw_usart_read_data_register_not_empty_flag(USARTx) != USART_ISR_RXNE);
-        data[i] = hw_usart_receive_data(USARTx);
-    }
-
-    return stm32_errcode_success;
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    struct hw_usart_recv_data_t buff = {
+        .data = data,
+        .size = length,
+    };
+    bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_RECV_DATA, usart, (LPARAM)&buff);
+    return bRet;
 }
-
-int32_t hal_usart_receive_buffer(enum usart_type_e type)
+int32_t hal_usart_receive_buffer(uint32_t usart)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
     int32_t bRet = -1;
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    if(hw_usart_read_data_register_not_empty_flag(USARTx) == USART_ISR_RXNE) {
-        bRet = hw_usart_receive_data(USARTx);
-    }
-    if(hw_usart_overrun_error_flag(USARTx)) {
-        hw_usart_clear_overrun_error_flag(USARTx);
-    }
+    hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_FETCH_DATA, usart, (LPARAM)&bRet);
     return bRet;
 }
 
-uint32_t hal_usart_set_enable(enum usart_type_e type)
+uint32_t hal_usart_set_enable(uint32_t usart)
 {
-    struct USART_TypeDef* USARTx = hal_usart_get_register(type);
-
-    if(!USARTx) {
-        return stm32_errcode_param_error;
-    }
-    hw_usart_set_enable(USARTx);
-    return stm32_errcode_success;  
+    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
+    bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SET_ENABLE, usart, hw_usart_enable);
+    return bRet;
 }

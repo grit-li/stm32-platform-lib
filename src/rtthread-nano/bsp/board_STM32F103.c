@@ -4,10 +4,24 @@
 #include "stm32/usart.h"
 #include "stm32/gpio.h"
 
-#include "drv_gpio.h"
+#include "drivers/drv_gpio.h"
 
-static HGPIO hrx = MAKE_HGPIO(gpio_group_a, gpio_port_10, gpio_mode_output_alternate_push_pull_up, gpio_alternate_7, gpio_status_low);
-static HGPIO htx = MAKE_HGPIO(gpio_group_a, gpio_port_9, gpio_mode_output_alternate_push_pull_up, gpio_alternate_7, gpio_status_low);
+static const struct gpio_init_t rx_config = {
+    .group = gpio_group_a,
+    .port = gpio_port_10,
+    .mode = gpio_mode_input_pull_down,
+    .alternate = gpio_alternate_invalid,
+    .speed = gpio_speed_very_high,
+    .status = gpio_status_low,
+};
+static const struct gpio_init_t tx_config = {
+    .group = gpio_group_a,
+    .port = gpio_port_9,
+    .mode = gpio_mode_alternate_push_pull,
+    .alternate = gpio_alternate_invalid,
+    .speed = gpio_speed_very_high,
+    .status = gpio_status_low,
+};
 static unsigned int g_rt_console_init_flag = 0;
 
 static void irq_systick_handler(void)
@@ -37,8 +51,8 @@ void *rt_heap_end_get(void)
 
 static void rt_hw_console_init(void)
 {
-    gpio_init(hrx);
-    gpio_init(htx);
+    gpio_init(&rx_config);
+    gpio_init(&tx_config);
     struct usart_init_t init;
     usart_struct_init(&init, usart_type_1);
     usart_init(&init);
@@ -64,7 +78,7 @@ void rt_hw_board_init(void)
     irq_set_priority_group(irq_priority_group_2);
     irq_set_priority(irq_vector_type_systick, irq_preempt_priority_3, irq_sub_priority_3);
     irq_register_handler(irq_vector_type_systick, irq_systick_handler);
-    systick_init();
+    systick_init(systick_time_1ms);
 
     rt_hw_pin_init();
     
