@@ -41,7 +41,7 @@ cp $ROOT_PATH/src/stm32-platform/lib/*.a $SYSROOT_LIB_PATH
 cp $ROOT_PATH/ldscripts/$LDSCRIPTS_PATH $SYSROOT_LDSCRIPTS_PATH
 
 # pack
-PACK_VER=$(cat $ROOT_PATH/BASE-VER)
+PACK_VER=$(grep STM32_PLATFORM_VERSION $ROOT_PATH/src/include/stm32_version.h | awk -F '["]' '{ print $2 }')
 BUILD_DATE=$(date +%Y-%m-%d)
 PACK_NAME=${BUILD_PLATFORM_ID}_${PACK_VER}_${BUILD_DATE}
 
