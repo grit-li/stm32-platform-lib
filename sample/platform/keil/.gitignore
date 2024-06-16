@@ -1,0 +1,10 @@
+/DebugConfig
+/Listings
+/Objects
+
+*.BAT
+*.scvd
+
+#Keil Project screen layout file
+*.uvguix.*
+*.uvgui.*
