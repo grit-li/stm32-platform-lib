@@ -2,6 +2,7 @@ TOP := ..
 
 TARGET := lib$(BUILD_PLATFORM_ID)
 
+SOURCES += hw/common/hw_common.c
 SOURCES += hw/common/stm32_assert.c
 
 include hw/$(ARM_CPU_ARCH)/sources.in

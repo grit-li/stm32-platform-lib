@@ -1,0 +1,9 @@
+
+SOURCES += startup/boot.c
+SOURCES += startup/startup.c
+
+SOURCES += device/can.c
+SOURCES += device/led.c
+SOURCES += src/main.c
+
+LOCAL_CFLAGS += -Iconfig -Idevice

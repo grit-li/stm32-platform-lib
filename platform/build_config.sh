@@ -3,6 +3,10 @@
 export ROOT_PATH=$PWD/../..
 export EXTERN_DEFINED="-DBUILD_CHIP_${BUILD_PLATFORM_CHIP} "
 
+if [ -z $STM32_SUPPORT_SAMPLE ]; then
+export STM32_SUPPORT_SAMPLE=0
+fi
+
 if [ -z $SUPPORT_STM32_ASSERT ]; then
 export SUPPORT_STM32_ASSERT=0
 fi

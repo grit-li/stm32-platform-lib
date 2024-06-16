@@ -2,11 +2,13 @@
 
 lib
 obj
+bin
 
 !.gitignore
 !/platform
 !/src
 !/ldscripts
 !/env
+!/sample
 
 !/BASE-VER

@@ -12,4 +12,12 @@ cd $ROOT_PATH/src
 make rebuild || exit -1
 cd -
 
-bash ../build_pack.sh
+bash ../build_pack.sh 0
+
+if [ $STM32_SUPPORT_SAMPLE -eq 1 ]; then
+cd $ROOT_PATH/sample/platform/stm32
+bash build_${1}.sh
+cd -
+fi
+
+bash ../build_pack.sh 1
