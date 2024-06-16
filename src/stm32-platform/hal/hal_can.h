@@ -7,9 +7,18 @@
 extern "C" {
 #endif
 
-uint32_t hal_can_init(uint32_t);
-uint32_t hal_can_send_data(uint32_t id, uint8_t IDE, uint8_t DLC, const uint8_t* DATA);
-uint32_t hal_can_recv_data(uint32_t* id, uint8_t* IDE, uint8_t* DLC, uint8_t* DATA);
+struct hal_can_frame_t
+{
+    uint32_t ID;
+    uint8_t IDE;
+    uint8_t RTR;
+    uint8_t DLC;
+    uint8_t DATA[8];
+};
+
+uint32_t hal_can_init(void);
+uint32_t hal_can_send_data(const struct hal_can_frame_t *);
+uint32_t hal_can_recv_data(struct hal_can_frame_t *);
 
 #ifdef __cplusplus
 }

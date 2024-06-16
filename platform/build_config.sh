@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export ROOT_PATH=$PWD/../..
 export EXTERN_DEFINED="-DBUILD_CHIP_${BUILD_PLATFORM_CHIP} "
 
 if [ -z $SUPPORT_STM32_ASSERT ]; then

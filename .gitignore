@@ -7,5 +7,6 @@ obj
 !/platform
 !/src
 !/ldscripts
+!/env
 
 !/BASE-VER

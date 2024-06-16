@@ -8,24 +8,30 @@
 extern "C" {
 #endif
 
-typedef uint32_t HCAN;
-#define HCAN_NULL ((HCAN)0xffffffff)
-
-struct can_init_t
+enum can_frame_type_e
 {
-    uint8_t mode;
+    can_frame_type_std,
+    can_frame_type_ext,
+};
+
+enum can_transmission_type_e
+{
+    can_transmission_type_data,
+    can_transmission_type_remote,
 };
 
 struct can_frame_t
 {
-    uint32_t id;
+    uint32_t ID;
     uint8_t IDE;
+    uint8_t RTR;
     uint8_t DLC;
     uint8_t DATA[8];
 };
-HCAN can_init(const struct can_init_t *);
-uint32_t can_send_data(HCAN, const struct can_frame_t *);
-uint32_t can_recv_data(HCAN, struct can_frame_t *, uint32_t);
+
+uint32_t can_init(void);
+uint32_t can_send_data(const struct can_frame_t *);
+uint32_t can_recv_data(struct can_frame_t *);
 
 #ifdef __cplusplus
 }

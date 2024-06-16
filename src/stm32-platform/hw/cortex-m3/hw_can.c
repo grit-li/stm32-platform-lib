@@ -259,20 +259,13 @@ static void hw_can_init(struct CAN_TypeDef* CANx)
         }
     }
 
-    uint16_t CAN_FilterIdHigh = (((uint32_t)0x1314 << 3) & 0xFFFF0000) >> 16;
-    uint16_t CAN_FilterIdLow  = (((uint32_t)0x1314 << 3) | 0x00000000 | 0x00000004) & 0xFFFF;
-    uint16_t CAN_FilterMaskIdHigh = 0xFFFF;
-    uint16_t CAN_FilterMaskIdLow  = 0xFFFF;
-
     __BIT_OR__(__GET_CAN_FMR__(CANx), FMR_FINIT);
 
     __BIT_RESET__(__GET_CAN_FA1R__(CANx), 0x00000001);
     __BIT_OR__(__GET_CAN_FS1R__(CANx), 0x00000001);
 
-
-    __GET_CAN_sFilterRegister__(CANx, 0).FR1 = ((0x0000FFFF & (uint32_t)CAN_FilterIdHigh) << 16) | (0x0000FFFF & (uint32_t)CAN_FilterIdLow);
-    /* 32-bit mask or Second 32-bit identifier */
-    __GET_CAN_sFilterRegister__(CANx, 0).FR2 = ((0x0000FFFF & (uint32_t)CAN_FilterMaskIdHigh) << 16) | (0x0000FFFF & (uint32_t)CAN_FilterMaskIdLow);
+    __GET_CAN_sFilterRegister__(CANx, 0).FR1 = 0x00000000;
+    __GET_CAN_sFilterRegister__(CANx, 0).FR2 = 0x00000000;
 
     __BIT_RESET__(__GET_CAN_FM1R__(CANx), 0x00000001);
     __BIT_RESET__(__GET_CAN_FFA1R__(CANx), 0x00000001);
@@ -300,9 +293,9 @@ uint8_t hw_can_transmit(struct CAN_TypeDef* CANx, const struct hw_can_frame_t* m
         /* Set up the Id */
         CANx->sTxMailBox[transmit_mailbox].TIR &= TMIDxR_TXRQ;
         if (message->IDE == 0) {
-            CANx->sTxMailBox[transmit_mailbox].TIR |= ((message->id << 21));
+            CANx->sTxMailBox[transmit_mailbox].TIR |= ((message->ID << 21) | (message->RTR == 1 ? 0x00000002 : 0x00000000));
         } else {
-            CANx->sTxMailBox[transmit_mailbox].TIR |= ((message->id << 3) | 0x00000004);
+            CANx->sTxMailBox[transmit_mailbox].TIR |= ((message->ID << 3) | 0x00000004 | (message->RTR == 1 ? 0x00000002 : 0x00000000));
         }
 
         /* Set up the DLC */
@@ -329,9 +322,9 @@ uint8_t hw_can_receive(struct CAN_TypeDef* CANx, struct hw_can_frame_t* message)
     uint8_t FIFONumber = 0x00;
     message->IDE = (uint8_t)0x04 & CANx->sFIFOMailBox[FIFONumber].RIR;
     if (message->IDE == 0x00000000) {
-        message->id = (uint32_t)0x000007FF & (CANx->sFIFOMailBox[FIFONumber].RIR >> 21);
+        message->ID = (uint32_t)0x000007FF & (CANx->sFIFOMailBox[FIFONumber].RIR >> 21);
     } else {
-        message->id = (uint32_t)0x1FFFFFFF & (CANx->sFIFOMailBox[FIFONumber].RIR >> 3);
+        message->ID = (uint32_t)0x1FFFFFFF & (CANx->sFIFOMailBox[FIFONumber].RIR >> 3);
     }
 
     message->RTR = (uint8_t)0x02 & CANx->sFIFOMailBox[FIFONumber].RIR;
@@ -353,16 +346,15 @@ uint8_t hw_can_receive(struct CAN_TypeDef* CANx, struct hw_can_frame_t* message)
     } else {
         CANx->RF1R |= CAN_RF1R_RFOM1;
     }
+    return 0;
 }
 
 enum hw_platform_errcode_e hw_platform_can_cmd(uint8_t type, WPARAM wParam, LPARAM lParam)
 {
     enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
     switch(type) {
-        case HW_CAN_CMD_SET_PROP:
+        case HW_CAN_CMD_INIT:
             hw_can_init(CAN1);
-            break;
-        case HW_CAN_CMD_GET_PROP:
             break;
         case HW_CAN_CMD_SEND_CMD:
             hw_can_transmit(CAN1, (const struct hw_can_frame_t *)wParam);

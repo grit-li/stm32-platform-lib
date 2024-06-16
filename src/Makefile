@@ -6,14 +6,11 @@ DIRS += cutils
 DIRS += stm32-platform
 DIRS += rtthread-nano
 
-.PHONY: rebuild all clean install $(DIRS)
+.PHONY: rebuild all clean $(DIRS)
 all:
 	@$(call FOREACH_EXECUTE_FUNC,$(DIRS),$@)
 
 clean:
-	@$(call FOREACH_EXECUTE_FUNC,$(DIRS),$@)
-
-install:
 	@$(call FOREACH_EXECUTE_FUNC,$(DIRS),$@)
 
 rebuild:

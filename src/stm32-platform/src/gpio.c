@@ -97,6 +97,7 @@ static inline enum hal_gpio_pupd_e gpio_mode_e_to_hal_gpio_pupd_e(enum gpio_mode
     return bRet;
 }
 
+
 static inline enum hal_gpio_speed_e gpio_speed_e_to_hal_gpio_speed_e(enum gpio_speed_e speed)
 {
     enum hal_gpio_speed_e bRet = hal_gpio_speed_low;

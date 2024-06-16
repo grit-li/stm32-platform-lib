@@ -32,7 +32,7 @@ typedef long (*syscall_func)(void);
  * @param desc is the description of the command, which will show in help list.
  */
 #define MSH_CMD_EXPORT(command, desc)   \
-  MSH_FUNCTION_EXPORT_CMD(command, #command, desc)
+    MSH_FUNCTION_EXPORT_CMD(command, #command, desc)
 
 /**
  * @ingroup msh

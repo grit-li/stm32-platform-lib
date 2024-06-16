@@ -98,8 +98,8 @@ static uint32_t hw_gpio_set_mode(uint32_t gpio, uint32_t mode)
     struct GPIO_TypeDef* GPIOx = __GET_GPIO_REGISTER__(gpio);
     uint32_t port = __GET_GPIO_PORT__(gpio);
 
-    uint32_t* CR = 0;
-    uint32_t  ODR = __GET_GPIO_ODR__(GPIOx);
+    uint32_t CR = 0;
+    uint32_t ODR = __GET_GPIO_ODR__(GPIOx);
     uint32_t MODE = 0x00000000;
 
     switch(mode) {
@@ -115,17 +115,17 @@ static uint32_t hw_gpio_set_mode(uint32_t gpio, uint32_t mode)
 
     switch(port){
         case 0 ... 7:
-            CR = &__GET_GPIO_CRL__(GPIOx);
+            CR = __GET_GPIO_CRL__(GPIOx);
             break;
         case 8 ... 15:
-            CR = &__GET_GPIO_CRH__(GPIOx);
+            CR = __GET_GPIO_CRH__(GPIOx);
             port -= 8;
             break;
         default:
             break;
     }
     if(CR != 0) {
-        MODE = *CR;
+        MODE = CR;
         MODE = MODE & ~(0x0F << (port << 2));
 
         switch(mode) {
@@ -165,7 +165,17 @@ static uint32_t hw_gpio_set_mode(uint32_t gpio, uint32_t mode)
             default:
                 break;
         }
-        *CR = MODE;
+        CR = MODE;
+        switch(port) {
+            case 0 ... 7:
+                __GET_GPIO_CRL__(GPIOx) = CR;
+                break;
+            case 8 ... 15:
+                __GET_GPIO_CRH__(GPIOx) = CR;
+                break;
+            default:
+                break;
+        }
         __GET_GPIO_ODR__(GPIOx) = ODR;
     }
     return 0;
