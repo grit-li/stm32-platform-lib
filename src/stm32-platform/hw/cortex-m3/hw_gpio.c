@@ -97,6 +97,7 @@ static uint32_t hw_gpio_set_mode(uint32_t gpio, uint32_t mode)
 {
     struct GPIO_TypeDef* GPIOx = __GET_GPIO_REGISTER__(gpio);
     uint32_t port = __GET_GPIO_PORT__(gpio);
+    uint32_t old_port = port;
 
     uint32_t CR = 0;
     uint32_t ODR = __GET_GPIO_ODR__(GPIOx);
@@ -166,7 +167,7 @@ static uint32_t hw_gpio_set_mode(uint32_t gpio, uint32_t mode)
                 break;
         }
         CR = MODE;
-        switch(port) {
+        switch(old_port) {
             case 0 ... 7:
                 __GET_GPIO_CRL__(GPIOx) = CR;
                 break;
