@@ -18,7 +18,7 @@ export NM="arm-none-eabi-nm"
 export ASFLAGS=" -Wall -fdata-sections -ffunction-sections -Wa,-mimplicit-it=thumb "
 export CFLAGS="-Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -I$SYSROOTPATH/include -I$SYSROOTPATH/include/rtthread-nano "
 export CXXFLAGS="-Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 "
-export LDFLAGS="-Wl,--gc-sections -lc -lm --specs=nano.specs -T$SYSROOTPATH/ldscripts/STM32L475VETx_FLASH.ld -L$SYSROOTPATH/lib -lcutils -Wl,--whole-archive -lrtthread-nano -Wl,--no-whole-archive -lSTM32L475 "
+export LDFLAGS="-Wl,--gc-sections -lc -lm --specs=nano.specs -T$SYSROOTPATH/sample/ldscripts/STM32L475VETx_FLASH.ld -L$SYSROOTPATH/lib -lcutils -Wl,--whole-archive -lrtthread-nano -Wl,--no-whole-archive -lSTM32L475 "
 export CPPFLAGS="-g"
 export ARCH=arm
 export CROSS_COMPILE=arm-none-eabi-

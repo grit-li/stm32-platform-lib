@@ -269,7 +269,7 @@
             <IncludeLibs></IncludeLibs>
             <IncludeDir></IncludeDir>
             <Misc></Misc>
-            <ScatterFile>..\..\..\ldscripts\STM32F103ZETx_FLASH.ld</ScatterFile>
+            <ScatterFile>..\..\ldscripts\STM32F103ZETx_FLASH.ld</ScatterFile>
           </LDarm>
         </TargetArm>
       </TargetOption>
