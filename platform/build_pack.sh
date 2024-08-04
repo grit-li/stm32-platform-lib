@@ -58,7 +58,7 @@ git log --oneline --no-merges --abbrev=8 >> changelog
 mv changelog $SYSROOT_LIB_PATH
 # pack
 PACK_VER=$(grep STM32_PLATFORM_VERSION $ROOT_PATH/src/include/stm32_version.h | awk -F '["]' '{ print $2 }')
-BUILD_DATE=$(date +%Y-%m-%d)
+BUILD_DATE=$(date --date="+12 hours" +%Y%m%d)
 PACK_NAME=${BUILD_PLATFORM_ID}_${PACK_VER}_${BUILD_DATE}
 
 cd $BUILD_OUTPUT_PATH
