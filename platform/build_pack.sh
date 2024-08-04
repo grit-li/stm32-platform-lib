@@ -48,13 +48,22 @@ mkdir -p $SYSROOT_SAMPLE_PATH
 cp $ROOT_PATH/sample/bin/*.hex $SYSROOT_SAMPLE_PATH
 fi
 
+echo "generate stm32 platform changelog"
+echo "build chip:       ${BUILD_PLATFORM_CHIP}" > changelog
+echo "build date:       "$(date --date="+12 hours" "+%Y-%m-%d %H:%M:%S") >> changelog
+echo "build branch:     ${STM32_PLARFORM_BRANCH}" >> changelog
+echo "build hash:       ${STM32_PLARFORM_HASH}" >> changelog
+echo "[changelog]" >> changelog
+git log --oneline --no-merges --abbrev=8 >> changelog
+mv changelog $SYSROOT_LIB_PATH
 # pack
 PACK_VER=$(grep STM32_PLATFORM_VERSION $ROOT_PATH/src/include/stm32_version.h | awk -F '["]' '{ print $2 }')
 BUILD_DATE=$(date +%Y-%m-%d)
 PACK_NAME=${BUILD_PLATFORM_ID}_${PACK_VER}_${BUILD_DATE}
 
 cd $BUILD_OUTPUT_PATH
-find sysroot -type f -exec md5sum {} \; > $SYSROOT_LIB_PATH/md5sums.txt
+find sysroot -type f -exec md5sum {} \; > md5sums.txt
+mv md5sums.txt $SYSROOT_LIB_PATH
 tar -czf $PACK_NAME.tar.gz sysroot/include sysroot/lib sysroot/ldscripts $PACK_SAMPLE
 md5sum $PACK_NAME.tar.gz
 cd -
