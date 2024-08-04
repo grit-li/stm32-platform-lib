@@ -1,21 +1,18 @@
-ENTRY(reset_handler)
-
-_Min_Heap_Size = 0x200;
-_Min_Stack_Size = 0x400;
+ENTRY(start_rtthread_kernel)
 
 MEMORY
 {
-    RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 64K
-    FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K
+    RAM (xrw)      : ORIGIN = 0x20000400, LENGTH = 60K
+    FLASH (rx)      : ORIGIN = 0x08020040, LENGTH = 200K
 }
 
 SECTIONS
 {
     .isr_vector :
     {
-        . = ALIGN(8);
+        . = ALIGN(4);
         KEEP(*(.isr_vector))
-        . = ALIGN(8);
+        . = ALIGN(4);
     } >FLASH
 
     .text :
@@ -74,17 +71,8 @@ SECTIONS
         . = ALIGN(4);
         _ebss = .;
     } >RAM
-
-    ._user_heap_stack :
-    {
-        . = ALIGN(8);
-        PROVIDE ( end = . );
-        PROVIDE ( _end = . );
-        . = . + _Min_Heap_Size;
-        . = . + _Min_Stack_Size;
-        . = ALIGN(8);
-    } >RAM
-
+    . = ALIGN(8);
+    end = .;
 }
 
 PROVIDE(_stack = ORIGIN(RAM) + LENGTH(RAM));

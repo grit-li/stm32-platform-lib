@@ -20,4 +20,6 @@ enum stm32_errcode_e
     stm32_errcode_param_invaild = -2,
 };
 
+const char* stm32_get_cmdlind(void);
+
 #endif

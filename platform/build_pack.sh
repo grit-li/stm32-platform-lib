@@ -37,6 +37,7 @@ cp -r $ROOT_PATH/src/include/*.h $SYSROOT_INCLUDE_PATH
 cp $ROOT_PATH/src/cutils/lib/*.a $SYSROOT_LIB_PATH
 cp $ROOT_PATH/src/rtthread-nano/lib/*.a $SYSROOT_LIB_PATH
 cp $ROOT_PATH/src/stm32-platform/lib/*.a $SYSROOT_LIB_PATH
+cp $ROOT_PATH/src/startup/lib/*.a $SYSROOT_LIB_PATH
 
 # copy ldscripts file.
 cp $ROOT_PATH/ldscripts/$LDSCRIPTS_PATH $SYSROOT_LDSCRIPTS_PATH

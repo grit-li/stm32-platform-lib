@@ -7,4 +7,7 @@ export ARM_CPU_ARCH=cortex-m3
 
 export STM32_SUPPORT_SAMPLE=1
 
+export STM32_TAG_ADDR=0x20000000
+export STM32_TAG_SIZE=1024
+
 bash ../build_stm32.sh $BUILD_PLATFORM_ID
