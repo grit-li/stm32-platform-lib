@@ -41,10 +41,6 @@ cp $ROOT_PATH/src/stm32-platform/lib/*.a $SYSROOT_LIB_PATH
 # copy ldscripts file.
 cp $ROOT_PATH/ldscripts/$LDSCRIPTS_PATH $SYSROOT_LDSCRIPTS_PATH
 
-if [ ${1} -eq 0 ]; then
-exit 0
-fi
-
 if [ $STM32_SUPPORT_SAMPLE -eq 1 ]; then
 export PACK_SAMPLE=sysroot/sample
 mkdir -p $SYSROOT_SAMPLE_PATH

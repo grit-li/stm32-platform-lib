@@ -1,4 +1,4 @@
-export SYSROOTPATH=$ROOT_PATH/out/sysroot
+export SYSROOTPATH=$ROOT_PATH/src
 export CROSS_COMPILE_DIR=/develop/toolchain-arm-none-eabi/bin
   
 export PATH=$CROSS_COMPILE_DIR:$PATH
@@ -16,9 +16,9 @@ export OBJDUMP="arm-none-eabi-objdump"
 export AR="arm-none-eabi-ar"
 export NM="arm-none-eabi-nm"
 export ASFLAGS=" -Wall -fdata-sections -ffunction-sections -Wa,-mimplicit-it=thumb "
-export CFLAGS="-Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -I$SYSROOTPATH/include -I$SYSROOTPATH/include/rtthread-nano -I$SYSROOTPATH/include/cutils"
+export CFLAGS="-Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 -I$SYSROOTPATH/include -I$SYSROOTPATH/stm32-platform -I$SYSROOTPATH/rtthread-nano/include -I$SYSROOTPATH/cutils/include"
 export CXXFLAGS="-Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2 "
-export LDFLAGS="-Wl,--gc-sections -lc -lm --specs=nano.specs -Tldscripts/STM32F103ZETx_FLASH.ld -L$SYSROOTPATH/lib -lcutils -Wl,--whole-archive -lrtthread -Wl,--no-whole-archive -lSTM32F103 "
+export LDFLAGS="-Wl,--gc-sections -lc -lm --specs=nano.specs -Tldscripts/STM32F103ZETx_FLASH.ld -L$SYSROOTPATH/cutils/lib -lcutils -L$SYSROOTPATH/rtthread-nano/lib -Wl,--whole-archive -lrtthread -Wl,--no-whole-archive -L$SYSROOTPATH/stm32-platform/lib -lSTM32F103 "
 export CPPFLAGS="-g"
 export ARCH=arm
 export CROSS_COMPILE=arm-none-eabi-
