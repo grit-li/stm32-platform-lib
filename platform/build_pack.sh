@@ -57,7 +57,7 @@ BUILD_DATE=$(date +%Y-%m-%d)
 PACK_NAME=${BUILD_PLATFORM_ID}_${PACK_VER}_${BUILD_DATE}
 
 cd $BUILD_OUTPUT_PATH
-find sysroot -type f -exec md5sum {} \; > md5sums.txt
-tar -czf $PACK_NAME.tar.gz sysroot/include sysroot/lib sysroot/ldscripts $PACK_SAMPLE md5sums.txt
+find sysroot -type f -exec md5sum {} \; > $SYSROOT_LIB_PATH/md5sums.txt
+tar -czf $PACK_NAME.tar.gz sysroot/include sysroot/lib sysroot/ldscripts $PACK_SAMPLE
 md5sum $PACK_NAME.tar.gz
 cd -

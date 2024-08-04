@@ -71,10 +71,9 @@ int32_t hal_gpio_set_status(uint32_t gpio, enum hal_gpio_status_e status)
 }
 enum hal_gpio_status_e hal_gpio_get_status(uint32_t gpio)
 {
-    enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
     enum hw_gpio_status_e state = hw_gpio_status_null;
     enum hal_gpio_status_e hal_gpio_state = hal_gpio_status_null;
-    bRet = hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_GET_STATUS, gpio, (LPARAM)&state);
+    hw_platform_send_cmd(hw_platform_gpio, HW_GPIO_CMD_GET_STATUS, gpio, (LPARAM)&state);
     switch(state) {
         case hw_gpio_status_low: hal_gpio_state = hal_gpio_status_low; break;
         case hw_gpio_status_high: hal_gpio_state = hal_gpio_status_high; break;

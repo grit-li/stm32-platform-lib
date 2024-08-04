@@ -21,7 +21,7 @@ enum hal_irqn_priority_group_e
     hal_irqn_priority_group_3,
     hal_irqn_priority_group_4,
 };
-
+void hal_irq_set_vector_table(uint32_t, uint32_t);
 int32_t hal_irq_set_priority_group(enum hal_irqn_priority_group_e);
 enum hal_irqn_priority_group_e hal_irq_get_priority_group(void);
 int32_t hal_irq_enable(enum hal_irqn_type_e);

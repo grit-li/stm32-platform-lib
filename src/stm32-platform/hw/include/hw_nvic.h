@@ -53,6 +53,9 @@ enum hw_nvic_cmd_e
 
     HW_NVIC_CMD_SET_PRIORITY, /*< WPARAM: enum hw_irqn_type_e, LPARAM: const struct hw_nvic_priority_t * >*/
     HW_NVIC_CMD_GET_PRIORITY, /*< WPARAM: enum hw_irqn_type_e, LPARAM: const struct hw_nvic_priority_t * >*/
+
+    HW_NVIC_CMD_SET_VECTOR_TABLE, /*< WPARAM: uint32_t, LPARAM: uint32_t >*/
+    HW_NVIC_CMD_GET_VECTOR_TABLE, /*< WPARAM: uint32_t *, LPARAM: uint32_t * >*/
 };
 
 #ifdef __cplusplus

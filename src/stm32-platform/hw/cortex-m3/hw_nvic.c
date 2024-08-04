@@ -107,6 +107,7 @@ static inline struct SCB_Type* __GET_SCB_REGISTER__(void)
 #define SCB_AIRCR_PRIGROUP_Pos                      (8U)
 #define SCB_AIRCR_PRIGROUP_Msk                      (0x7UL << SCB_AIRCR_PRIGROUP_Pos)   /*!< 0x00000700 */
 #define SCB_AIRCR_PRIGROUP                          SCB_AIRCR_PRIGROUP_Msk
+#define SCB_VTOR_TBLOFF                             ((uint32_t)0x1FFFFF80)
 
 #define __NVIC_PRIO_BITS 4
 static uint32_t hw_irq_encode_priority(uint32_t group, uint8_t preempt_priority, uint8_t sub_priority)
@@ -207,6 +208,11 @@ uint32_t hw_scb_get_priority_group(void)
     return (__GET_SCB_AIRCR__ & SCB_AIRCR_PRIGROUP) >> SCB_AIRCR_PRIGROUP_Pos;
 }
 
+void hw_scb_set_vector_table(uint32_t vectTab, uint32_t offset)
+{
+    __BIT_SET__(__GET_SCB_VTOR__, vectTab | (offset  & SCB_VTOR_TBLOFF));
+}
+
 static void hw_irq_set_priority(enum hw_nvic_irq_type_e irq, struct hw_nvic_priority_t* priority)
 {
     switch(irq) {
@@ -252,6 +258,9 @@ enum hw_platform_errcode_e hw_platform_nvic_cmd(uint8_t type, WPARAM wParam, LPA
             break;
         case HW_NVIC_CMD_SET_PRIORITY:
             hw_irq_set_priority(wParam, (struct hw_nvic_priority_t *)lParam);
+            break;
+        case HW_NVIC_CMD_SET_VECTOR_TABLE:
+            hw_scb_set_vector_table(wParam, lParam);
             break;
         default:
             bRet = hw_platform_errcode_not_support;

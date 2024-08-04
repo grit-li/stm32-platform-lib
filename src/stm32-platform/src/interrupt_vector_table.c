@@ -11,6 +11,10 @@ static inline void exec_irq_handler(enum irq_vector_type_e irq)
     }
 }
 
+void irq_set_vector_table(uint32_t table, uint32_t offset)
+{
+    hal_irq_set_vector_table(table, offset);
+}
 int32_t irq_register_handler(enum irq_vector_type_e irq, irq_vector_handler handler)
 {
     if(irq_vector_table[irq] != NULL || handler == NULL || irq >= irq_vector_type_max) {

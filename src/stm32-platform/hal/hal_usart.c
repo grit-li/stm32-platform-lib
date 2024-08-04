@@ -101,10 +101,7 @@ uint32_t hal_usart_set_flow_control(uint32_t usart, enum hal_usart_flow_control_
 uint32_t hal_usart_transport_data(uint32_t usart, const uint8_t* data, uint32_t length)
 {
     enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
-    struct hw_usart_send_data_t buff = {
-        .data = data,
-        .size = length,
-    };
+    struct hw_usart_send_data_t buff = { data, length };
     bRet = hw_platform_send_cmd(hw_platform_usart, HW_USART_CMD_SEND_DATA, usart, (LPARAM)&buff);
     return bRet;
 }

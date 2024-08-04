@@ -135,6 +135,7 @@ enum irq_sub_priority_e
     irq_sub_priority_3,
 };
 
+void irq_set_vector_table(uint32_t, uint32_t);
 int32_t irq_register_handler(enum irq_vector_type_e, irq_vector_handler);
 int32_t irq_unregister_handler(enum irq_vector_type_e);
 

@@ -3,6 +3,10 @@
 #include "hw_nvic.h"
 #include "hal_interrupt_vector_table.h"
 
+void hal_irq_set_vector_table(uint32_t table, uint32_t offset)
+{
+    hw_platform_send_cmd(hw_platform_nvic, HW_NVIC_CMD_SET_VECTOR_TABLE, table, offset);
+}
 int32_t hal_irq_set_priority_group(enum hal_irqn_priority_group_e group)
 {
     enum hw_platform_errcode_e bRet = hw_platform_errcode_success;
